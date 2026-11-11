@@ -5,6 +5,7 @@ import { previewEngine } from '../engine/previewEngine';
 import type { ExportCapabilities } from '../engine/export/capabilities';
 import { defaultExportSettings } from '../engine/export/exportSettings';
 import type { ExportProgress, ExportResult } from '../engine/export/exporter';
+import { track } from './analytics';
 import type { ExportSettings } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -97,6 +98,7 @@ export async function startExport() {
       onProgress: (progress) => useExportStore.setState({ progress }),
     });
     useExportStore.setState({ status: 'done', result: { ...result, url: URL.createObjectURL(result.blob) } });
+    track('export_complete', { resolution: `${result.width}x${result.height}`, fps: result.frameRate, codec: result.videoCodec, seconds: Math.round(result.duration) });
   } catch (err) {
     if (err instanceof DOMException && err.name === 'AbortError') useExportStore.setState({ status: 'cancelled' });
     else useExportStore.setState({ status: 'error', error: err instanceof Error ? err.message : String(err) });

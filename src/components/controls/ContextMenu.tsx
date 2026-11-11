@@ -192,6 +192,9 @@ export function ContextMenu({ x, y, items, header, onClose, label = 'Context men
       e.preventDefault();
       onClose();
     };
+    // Only the USER scrolling elsewhere closes the menu (wheel / touch). Programmatic
+    // scroll events – e.g. a panel re-clamping its scroll position when the right-click
+    // changes the selection – must not dismiss a menu that just opened.
     const scroll = (e: Event) => {
       if (!root.current?.contains(e.target as Node)) onClose();
     };
@@ -199,14 +202,16 @@ export function ContextMenu({ x, y, items, header, onClose, label = 'Context men
       document.addEventListener('pointerdown', outside, true);
     });
     window.addEventListener('keydown', key, true);
-    window.addEventListener('scroll', scroll, true);
+    window.addEventListener('wheel', scroll, { capture: true, passive: true });
+    window.addEventListener('touchmove', scroll, { capture: true, passive: true });
     window.addEventListener('resize', onClose);
     window.addEventListener('blur', onClose);
     return () => {
       window.clearTimeout(t);
       document.removeEventListener('pointerdown', outside, true);
       window.removeEventListener('keydown', key, true);
-      window.removeEventListener('scroll', scroll, true);
+      window.removeEventListener('wheel', scroll, true);
+      window.removeEventListener('touchmove', scroll, true);
       window.removeEventListener('resize', onClose);
       window.removeEventListener('blur', onClose);
     };

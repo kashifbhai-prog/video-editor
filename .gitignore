@@ -2,3 +2,7 @@ node_modules
 dist
 *.local
 .vite
+
+# Local site settings (see .env.example)
+.env
+.env.local

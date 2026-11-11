@@ -1,0 +1,47 @@
+<!doctype html>
+<html lang="en" data-layout="site" data-nav="help" data-help="audio" data-title="Audio editing: volume, fades, EQ and voice-over" data-description="Edit sound in Vyora: clip and track volume, gain, normalise, fade in and out, bass, treble, 5-band equaliser, balance, noise reduction, extracting audio from video and recording a voice-over.">
+<body>
+<article class="prose">
+<span class="kicker">Audio</span>
+<h1>Audio editing</h1>
+<p class="intro">Every clip with sound – audio files and the sound of video clips – has its own audio settings. What you hear in the editor is exactly what is exported.</p>
+<div class="toc" data-toc></div>
+
+<h2>Adding music and sounds</h2>
+<p>Import audio files in the <strong>Media</strong> or <strong>Audio</strong> panel and drag them onto an audio track (or click <strong>+</strong> to place them at the playhead). Audio clips show their waveform, so you can see where the loud parts are.</p>
+
+<h2>The audio settings</h2>
+<p>Select a clip with sound and open the <strong>Audio</strong> section in its properties.</p>
+<figure><img src="/img/audio.webp" width="2000" height="1125" alt="The audio section of a clip with volume, gain, normalize, fades, bass, treble and the equaliser" loading="lazy" /><figcaption>The audio settings of a music clip.</figcaption></figure>
+<table>
+  <tr><th>Setting</th><th>What it does</th></tr>
+  <tr><td>Clip volume</td><td>0–100%. Can be animated with keyframes (◇), for example to lower music while someone speaks.</td></tr>
+  <tr><td>Gain</td><td>Boosts or lowers the level by up to ±24 dB – for clips that are much too quiet or loud.</td></tr>
+  <tr><td>Normalize</td><td>Sets the gain so the loudest moment reaches −1 dB, without clipping.</td></tr>
+  <tr><td>Fade in / Fade out</td><td>Smooth start and end. Fades are drawn as ramps on the clip in the timeline.</td></tr>
+  <tr><td>Bass / Treble</td><td>Warmer or brighter sound (±15 dB).</td></tr>
+  <tr><td>Equalizer</td><td>Five bands – 60 Hz, 250 Hz, 1 kHz, 4 kHz and 12 kHz (±12 dB each).</td></tr>
+  <tr><td>Balance</td><td>Moves the sound to the left or right speaker.</td></tr>
+  <tr><td>Noise reduction</td><td>Removes rumble and the hiss or hum <em>between</em> words. For stronger cleaning use <a href="/help/ai-tools/#voice-enhancement">AI voice enhancement</a>.</td></tr>
+  <tr><td>Reset audio</td><td>Puts every audio setting of the clip back to neutral.</td></tr>
+</table>
+<p><strong>Track volume</strong> (select a track header) changes the level of a whole track from 0 to 200% – handy for turning all the music down at once. The speaker icon on a track header mutes the track.</p>
+
+<h2>Extracting audio from a video</h2>
+<p>To edit a video's sound separately – for example to keep talking while cutting the picture – select the video clip and click <strong>Extract audio</strong> in its Audio section, or right-click the clip and choose <strong>Extract audio</strong>. The sound is placed on an audio track at exactly the same time and the video clip is muted. Undo brings everything back.</p>
+
+<h2>Recording a voice-over</h2>
+<ol>
+  <li>Open the <strong>Audio</strong> panel and put the playhead where the narration should start.</li>
+  <li>Leave <em>Play the timeline while recording</em> ticked if you want to speak over the picture (use headphones to avoid an echo).</li>
+  <li>Click <strong>Record voice-over</strong>. The first time, your browser asks for permission to use the microphone – allow it.</li>
+  <li>Watch the level meter while you speak, then click <strong>Stop</strong>. The recording is placed on an audio track at the playhead. The <strong>✕</strong> button discards a take.</li>
+</ol>
+<div class="callout warn"><strong>No microphone access?</strong><p>If you blocked the microphone, click the lock icon in your browser's address bar, allow the microphone for this site and try again.</p></div>
+
+<h2>Balancing levels</h2>
+<p>Music should usually sit well below speech. Lower the music clip or track volume, or use <strong>AI tools › Audio enhancement › Balance all clip volumes</strong> to bring every clip to the same speech loudness automatically.</p>
+<div class="ad-slot" data-ad="help-article"></div>
+</article>
+</body>
+</html>

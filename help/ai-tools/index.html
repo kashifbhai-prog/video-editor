@@ -1,0 +1,77 @@
+<!doctype html>
+<html lang="en" data-layout="site" data-nav="help" data-help="ai-tools" data-title="AI tools: silence removal, voice enhancement, smart cuts, background removal, highlights" data-description="Use Vyora's free on-device AI: remove silent pauses, clean up and level voices, find scene changes and bad takes, remove the background behind a person and build highlight reels with a summary.">
+<body>
+<article class="prose">
+<span class="kicker">AI tools</span>
+<h1>AI tools</h1>
+<p class="intro">The <strong>AI tools</strong> panel holds five assistants that do tedious editing for you. They all run on your computer, are free to use without limits, and every change they make is a normal edit you can undo.</p>
+<div class="toc" data-toc></div>
+
+<div class="callout note"><strong>Before you start</strong><p>Each tool shows a progress bar with the time left and a <strong>Cancel</strong> button. Tools that need a model download it once (you will see "Downloading model"), after which they also work offline.</p></div>
+
+<h2 id="silence-removal">Silence removal</h2>
+<p>Cut out the pauses in talking-head videos, tutorials and podcasts.</p>
+<ol>
+  <li>Open <strong>AI tools › Silence removal</strong> and click <strong>Detect silence</strong>.</li>
+  <li>The pauses appear as red bands across the timeline and in a list with their times and lengths.</li>
+  <li>Review them: untick a pause in the list – or click the top of its band on the timeline – to keep it (it turns grey). Click a time to jump there.</li>
+  <li>Click <strong>Remove … pauses</strong>.</li>
+</ol>
+<figure><img src="/img/ai-silence.webp" width="2000" height="1125" alt="Pauses detected as red bands on the timeline with the list of pauses in the AI tools panel" loading="lazy" /><figcaption>Every detected pause can be reviewed before anything is cut.</figcaption></figure>
+<p>The pauses are cut from <em>all unlocked tracks at once</em> and the gaps close, so the picture, the voice, the music and the captions stay in sync. The whole removal is one undo step.</p>
+<table>
+  <tr><th>Setting</th><th>Meaning</th></tr>
+  <tr><td>Automatic level</td><td>Vyora measures your recording's background noise and speech and sets the silence level itself. Untick to choose a level in dB.</td></tr>
+  <tr><td>Shortest pause</td><td>Pauses shorter than this are kept (natural breaths).</td></tr>
+  <tr><td>Keep around speech</td><td>A little silence left before and after each cut so speech doesn't sound chopped.</td></tr>
+</table>
+<p>Changing these settings updates the result instantly, without detecting again.</p>
+
+<h2 id="voice-enhancement">Audio enhancement</h2>
+<p>Make recordings from a phone or laptop microphone sound clean and clear. Select one clip with speech, then choose:</p>
+<ul>
+  <li><strong>AI noise removal</strong> – a neural network (RNNoise) removes fan, traffic, hum and hiss, even underneath the voice. <em>Strength</em> mixes back some of the original for a more natural room sound.</li>
+  <li><strong>Voice clarity</strong> – <em>Light, Clear voice</em> or <em>Strong (podcast)</em>: removes rumble and boominess and adds presence.</li>
+  <li><strong>Normalise speech loudness</strong> – brings the voice to a consistent, loud-enough level, with a limiter so it never distorts.</li>
+</ul>
+<p>Click <strong>Original</strong> and <strong>Enhanced</strong> to compare 8 seconds (from the playhead) before you decide. <strong>Apply to clip</strong> creates a cleaned copy of the audio (the original file stays in your media library). For a video clip, the clean voice is placed on an audio track in sync and the video's own sound is muted.</p>
+<p><strong>Balance all clip volumes</strong> measures every clip's speech and sets their gains so all speakers sound equally loud.</p>
+
+<h2 id="smart-cuts">Smart cuts</h2>
+<p>Let Vyora watch a long clip and suggest where to cut. Select a video clip and click <strong>Analyse selected clip</strong>. It finds:</p>
+<table>
+  <tr><th>Suggestion</th><th>What it means</th></tr>
+  <tr><td>Scene change</td><td>The picture changes completely – split here to edit the scenes separately (shown as dashed blue lines).</td></tr>
+  <tr><td>Repeated take</td><td>A scene that looks like a later one – usually a take you redid. Suggests removing the earlier one.</td></tr>
+  <tr><td>Long pause</td><td>Nobody speaks for a while.</td></tr>
+  <tr><td>Nothing happens</td><td>The picture is frozen and silent.</td></tr>
+  <tr><td>Dark footage / Blurry</td><td>Black frames, or a stretch that is out of focus compared with the rest of the scene.</td></tr>
+</table>
+<p>Suggested cuts are shown as amber bands on the timeline. Accept (✓) or reject (✕) each one, or use <strong>Apply all cuts</strong> / <strong>Split at scenes</strong>. Accepted cuts close the gap on all tracks, just like silence removal.</p>
+
+<h2 id="background-removal">Background removal</h2>
+<p>Remove the background behind a person – no green screen needed.</p>
+<ol>
+  <li>Select a video or image clip showing a person.</li>
+  <li>In <strong>AI tools › Background removal</strong> (or the clip's <strong>Background (AI)</strong> properties) switch on <strong>Remove background</strong>.</li>
+  <li>Choose what replaces it: <strong>Transparent</strong> (shows the tracks below), <strong>Colour</strong> or <strong>Blur</strong> (a soft-focus version of the real background).</li>
+</ol>
+<p>For an <strong>image or video background</strong>, choose it under <em>Image or video background</em> and click <strong>Put behind the person</strong> – the person moves to an overlay track and your background is placed underneath for the same time.</p>
+<ul>
+  <li><strong>Quality</strong> model (≈ 16 MB) gives the cleanest edges and hair; <strong>Fast</strong> (≈ 0.25 MB) is quicker but rougher.</li>
+  <li><strong>Edge threshold</strong> and <strong>Edge softness</strong> fine-tune the cut-out.</li>
+</ul>
+<div class="callout warn"><strong>Good to know</strong><p>Background removal recognises <em>people</em>, not objects or animals. It works in the preview and in the export; exporting is slower with it switched on because every frame is processed.</p></div>
+
+<h2 id="summary-highlights">Summary and highlights</h2>
+<p>Turn a long talk into a short clip for social media.</p>
+<ol>
+  <li>Choose the <strong>Highlight length</strong> (10, 15, 30 or 60 seconds) and click <strong>Summarise video</strong>. If there are no captions yet, the speech is transcribed first.</li>
+  <li>You get a <strong>summary</strong> (the most important sentences of the video), <strong>keywords</strong>, <strong>important moments</strong> with timestamps (click to jump) and a list of <strong>highlights</strong>.</li>
+  <li>Untick any highlight you don't want and click <strong>Insert highlight reel</strong>.</li>
+</ol>
+<p>The reel is added after the end of your edit as normal clips – picture, sound and captions together – so you can trim it further or export just that part.</p>
+<div class="ad-slot" data-ad="help-article"></div>
+</article>
+</body>
+</html>

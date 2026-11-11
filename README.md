@@ -8,6 +8,35 @@ A browser-based professional video editor.
 - **Phase 4** – Audio editing (gain, fades, EQ, balance, noise reduction, normalise, extract, voice-over) and real MP4 export ✅
 - **Phase 5** – On-device AI: auto captions, silence removal, audio enhancement, smart cuts, background removal, summary & highlights ✅ (free, no API key)
 
+## Website
+
+The project is a small website around the editor (multi-page Vite build):
+
+| Path | Page |
+|---|---|
+| `/` | Landing page (`index.html`) |
+| `/editor/` | The editor app (`editor/index.html` → `src/main.tsx`) |
+| `/help/…` | Help Center: complete editor guide, 14 articles (`help/*/index.html`) |
+| `/about/`, `/contact/`, `/privacy/`, `/terms/`, `/licenses/`, `404.html` | Company and legal pages |
+
+Page files contain only their own content. `site/plugin.ts` wraps them in the shared layout
+(head / SEO / social tags, header, footer, help sidebar), writes `robots.txt`, `sitemap.xml` and
+`ads.txt`, and adds Google Analytics + AdSense with Consent Mode v2 when configured.
+`site/site.css` holds the design (same palette as the editor); `site/consent.ts` the cookie banner.
+
+Settings (copy `.env.example` to `.env`, or set them in the hosting dashboard):
+
+| Variable | Purpose |
+|---|---|
+| `VITE_SITE_URL` | Public address (canonical links, sitemap, social cards) |
+| `VITE_CONTACT_EMAIL` | Shown on Contact / Privacy / Terms |
+| `VITE_GA_ID` | Google Analytics 4 id – empty = no analytics |
+| `VITE_ADSENSE_CLIENT` | AdSense publisher id (`ca-pub-…`) – empty = no ads, no `ads.txt` |
+| `VITE_ADSENSE_SLOT` | Optional ad unit id for the in-page slots (Auto ads work without it) |
+
+Ads only appear on website pages, never inside the editor. Hosting: `netlify.toml` (Netlify) and
+`public/.htaccess` (Apache / cPanel) set the headers.
+
 ## Run locally
 
 Requires Node.js 18+ (tested on Node 22).

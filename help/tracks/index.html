@@ -1,0 +1,43 @@
+<!doctype html>
+<html lang="en" data-layout="site" data-nav="help" data-help="tracks" data-title="Tracks and layers" data-description="Video, overlay, text and audio tracks in Vyora: adding, renaming, reordering, hiding, muting and locking tracks, layer order and track volume.">
+<body>
+<article class="prose">
+<span class="kicker">Editing</span>
+<h1>Tracks and layers</h1>
+<p class="intro">Tracks are the horizontal rows of the timeline. Each holds one kind of content, and tracks higher up are drawn on top of the ones below.</p>
+<div class="toc" data-toc></div>
+
+<h2>Kinds of tracks</h2>
+<table>
+  <tr><th>Track</th><th>Holds</th><th>Typical use</th></tr>
+  <tr><td>Text</td><td>Text clips</td><td>Titles, captions, lower thirds. Always on top.</td></tr>
+  <tr><td>Overlay</td><td>Images and videos</td><td>Logos, stickers, picture-in-picture, a person with the background removed.</td></tr>
+  <tr><td>Video (main)</td><td>Images and videos</td><td>Your main footage. The main video track cannot be deleted.</td></tr>
+  <tr><td>Audio</td><td>Audio files</td><td>Music, voice-over, sound effects, extracted or enhanced audio.</td></tr>
+</table>
+<p>A new project starts with one track of each kind. The sound of video clips plays from the video track itself – you don't need an audio track for it.</p>
+
+<h2>Adding and removing tracks</h2>
+<ul>
+  <li>Click <strong>+ Track</strong> in the timeline toolbar or <strong>Add track</strong> below the last track and choose the kind.</li>
+  <li>Or drop a media file on the empty row below the tracks – a matching track is created.</li>
+  <li>To remove a track, click its header to select it and press <kbd>Delete</kbd>. Its clips are removed with it (undo brings them back).</li>
+</ul>
+
+<h2>Track controls</h2>
+<p>Each track header has:</p>
+<ul>
+  <li><strong>Name</strong> – double-click to rename.</li>
+  <li><strong>Eye</strong> – hide or show the track in the player <em>and</em> in the export.</li>
+  <li><strong>Speaker</strong> – mute or unmute the track's sound (also in the export).</li>
+  <li><strong>Lock</strong> – protect the track. Locked clips cannot be moved, trimmed, split or deleted; AI edits such as silence removal leave locked tracks alone.</li>
+</ul>
+<p>Click a track header to select the track. Its properties then include <strong>Track volume</strong> (0–200%), which applies on top of each clip's own volume.</p>
+
+<h2>Layer order</h2>
+<p>Tracks higher in the list are drawn in front. To put an image above another, move it to a higher overlay track: drag the clip, or right-click it and use <strong>Arrange › Bring forward</strong> / <strong>Send backward</strong>. Tracks of the same kind can also be moved up or down from the track properties.</p>
+<div class="callout tip"><strong>Picture-in-picture</strong><p>Put your main video on the video track and a second video on an overlay track, then scale it down and move it into a corner by dragging it in the player.</p></div>
+<div class="ad-slot" data-ad="help-article"></div>
+</article>
+</body>
+</html>

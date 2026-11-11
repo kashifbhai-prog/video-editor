@@ -1,0 +1,66 @@
+<!doctype html>
+<html lang="en" data-layout="site" data-nav="help" data-help="troubleshooting" data-title="Troubleshooting and FAQ" data-description="Fix common problems in the Vyora video editor: supported browsers, slow playback, files that won't import, export errors, AI model downloads, microphone access and lost projects.">
+<body>
+<article class="prose">
+<span class="kicker">Reference</span>
+<h1>Troubleshooting and FAQ</h1>
+<p class="intro">Something not working as expected? Most problems have a quick fix.</p>
+<div class="toc" data-toc></div>
+
+<h2>Which browsers are supported?</h2>
+<p>Vyora needs modern browser technology for video decoding, GPU rendering and encoding (WebCodecs and WebGL2).</p>
+<table>
+  <tr><th>Browser</th><th>Status</th></tr>
+  <tr><td>Google Chrome, Microsoft Edge (94+)</td><td>Recommended – fully supported and tested.</td></tr>
+  <tr><td>Safari 16.4+, Firefox 130+</td><td>Should work; not fully tested. Some export options (for example AAC audio or HEVC) may be unavailable.</td></tr>
+  <tr><td>Phones and tablets</td><td>The editor is designed for computers with a mouse and keyboard.</td></tr>
+</table>
+<p>If the export dialog says your browser cannot encode video, update your browser or switch to Chrome or Edge.</p>
+
+<h2>Playback is slow or stutters</h2>
+<ul>
+  <li>Lower the <strong>preview quality</strong> to 1/2 or 1/4 (below the player). Exports are unaffected.</li>
+  <li>Close other heavy tabs and programs.</li>
+  <li>Very high-resolution footage (4K) and many effects need a capable graphics card.</li>
+</ul>
+
+<h2>A file won't import or shows "Media missing"</h2>
+<ul>
+  <li>Check the format is supported (see <a href="/help/getting-started/#import-your-media">Getting started</a>) and the file is under 4&nbsp;GB.</li>
+  <li>Some video codecs (for example certain HEVC .mov files from iPhones) can't be played by every browser. Try Chrome or Edge, or convert the file to H.264 MP4.</li>
+  <li>"Media missing" after reopening means the file could not be stored in the browser – import it again.</li>
+</ul>
+
+<h2>The export failed</h2>
+<ul>
+  <li>Try a lower resolution – the error message tells you if your graphics card's limit was reached.</li>
+  <li>Very long 4K exports need a lot of memory; export in parts or at 1080p.</li>
+  <li>Remove or re-import clips marked as missing.</li>
+  <li>Keep the tab open and active until the export completes.</li>
+</ul>
+
+<h2>The AI model won't download</h2>
+<p>AI tools download their model the first time you use them (captions: 41–249 MB; background removal: 0.25–16 MB). Check your internet connection and that nothing blocks <em>huggingface.co</em>, <em>cdn.jsdelivr.net</em> or <em>storage.googleapis.com</em>, then try again. After the first download the models are kept in your browser and work offline.</p>
+
+<h2>Captions are wrong or out of sync</h2>
+<ul>
+  <li>Choose the correct language instead of "Detect automatically", and use the <em>Small</em> model for Urdu and other non-English speech.</li>
+  <li>Use <em>Selected clip only</em> as the audio source if music plays on another track.</li>
+  <li>Shift all captions with <strong>Sync −0.1 s / +0.1 s</strong>, or edit any caption's times.</li>
+</ul>
+
+<h2>The microphone doesn't work</h2>
+<p>Allow microphone access when the browser asks. If you blocked it, click the lock icon in the address bar, allow the microphone and reload. Check that the right microphone is selected in your system settings.</p>
+
+<h2>My project disappeared</h2>
+<p>Projects are stored in the browser on this computer only. They are lost if the browser's site data is cleared, if you used a private window, or if you open the editor in another browser. Save often (<kbd>Ctrl</kbd> + <kbd>S</kbd>) and export finished videos. See <a href="/help/projects-and-storage/">Projects and storage</a>.</p>
+
+<h2>Is my video uploaded anywhere?</h2>
+<p>No. Editing, AI processing and export happen on your device. The only downloads are the AI model files and the website itself. Read the <a href="/privacy/">Privacy Policy</a> for details.</p>
+
+<h2>Still stuck?</h2>
+<p>Tell us what happened on the <a href="/contact/">contact page</a> – include your browser and what you were doing.</p>
+<div class="ad-slot" data-ad="help-article"></div>
+</article>
+</body>
+</html>

@@ -11,6 +11,7 @@ import { isFresh, useAiResults, type Highlight, type SummaryResult } from './aiS
 import { captionClips, transcribeTimeline } from './captions';
 import { getLastScenes } from './smartEdit';
 import { isStillClip } from './silence';
+import { track } from '../analytics';
 import { selectClips } from '../editingService';
 
 // ---------------------------------------------------------------------------
@@ -135,6 +136,7 @@ export function insertHighlights(): string[] {
     selectClips(ids);
     const total = ranges.reduce((s, r) => s + r.end - r.start, 0);
     notify(`Highlight reel (${ranges.length} clips, ${total.toFixed(1)} s) added at ${formatTimecode(at)}. Undo with Ctrl+Z.`, 'success');
+    track('ai_highlights', { highlights: ranges.length, seconds: Math.round(total) });
   }
   return ids;
 }
