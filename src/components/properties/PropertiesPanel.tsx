@@ -188,7 +188,7 @@ export function PropertiesPanel() {
   const activeTab = contextual ? tab : 'project';
 
   return (
-    <aside aria-label="Properties" className="flex h-full w-[280px] shrink-0 flex-col border-l border-line bg-panel">
+    <aside aria-label="Properties" className="flex h-full min-w-0 flex-1 basis-0 flex-col border-l border-line bg-panel">
       <div className="flex h-9 shrink-0 items-end gap-4 border-b border-line px-3" role="tablist">
         {[
           { id: 'project' as const, label: 'Project' },

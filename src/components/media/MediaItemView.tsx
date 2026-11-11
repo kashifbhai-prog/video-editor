@@ -198,11 +198,12 @@ export const MediaItemView = memo(function MediaItemView({
       onClick={() => onSelect(item)}
       onKeyDown={(e) => e.key === 'Enter' && onSelect(item)}
       {...dragProps}
-      className="group cursor-pointer"
+      className="group w-[108px] cursor-pointer"
     >
       <div
         className={cn(
-          'relative aspect-video overflow-hidden rounded-md ring-1 transition-shadow',
+          // Fixed 108×72 thumbnails (video, image and audio alike).
+          'relative h-[72px] w-[108px] overflow-hidden rounded-md ring-1 transition-shadow',
           selected ? 'ring-2 ring-accent' : 'ring-line group-hover:ring-line-strong',
         )}
       >

@@ -20,7 +20,7 @@ export function SectionPanel() {
   const section = useUiStore((s) => s.activeSection);
 
   return (
-    <aside aria-label={`${section} panel`} className="flex h-full w-[300px] shrink-0 flex-col border-r border-line bg-panel">
+    <aside aria-label={`${section} panel`} className="flex h-full min-w-0 flex-1 basis-0 flex-col border-r border-line bg-panel">
       {section === 'media' && <MediaLibrary />}
       {section === 'audio' && (
         <div className="flex h-full min-h-0 flex-col">
