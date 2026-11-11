@@ -5,13 +5,13 @@
 // only appears when tracking is configured (VITE_GA_ID / VITE_ADSENSE_CLIENT).
 // ---------------------------------------------------------------------------
 
-const KEY = 'vyora.consent.v1';
+const KEY = 'cutistic.consent.v1';
 type Choice = 'granted' | 'denied';
 
 declare global {
   interface Window {
     gtag?: (...args: unknown[]) => void;
-    __vyoraTracking?: { ga: boolean; ads: boolean };
+    __cutisticTracking?: { ga: boolean; ads: boolean };
   }
 }
 
@@ -61,7 +61,7 @@ function showBanner() {
     style.textContent = CSS;
     document.head.appendChild(style);
   }
-  const t = window.__vyoraTracking ?? { ga: false, ads: false };
+  const t = window.__cutisticTracking ?? { ga: false, ads: false };
   const what = [t.ga && 'measure traffic (Google Analytics)', t.ads && 'show ads (Google AdSense)'].filter(Boolean).join(' and ');
   const box = document.createElement('div');
   box.className = 'vy-consent';
@@ -81,7 +81,7 @@ function showBanner() {
 }
 
 function init() {
-  const t = window.__vyoraTracking;
+  const t = window.__cutisticTracking;
   if (!t || (!t.ga && !t.ads)) return; // nothing to consent to
   // "Cookie settings" links (footer) reopen the banner.
   document.querySelectorAll<HTMLElement>('[data-cookie-settings]').forEach((el) => {
