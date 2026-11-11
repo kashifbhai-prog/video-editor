@@ -11,7 +11,7 @@ import { HELP_ARTICLES, HELP_GROUPS, SITE_PAGES } from './content';
 // It also writes robots.txt, sitemap.xml and (with an AdSense id) ads.txt.
 //
 // Settings come from environment variables (see .env.example):
-//   VITE_SITE_URL        public address, e.g. https://www.vyora.app
+//   VITE_SITE_URL        public address, e.g. https://www.cutistic.app
 //   VITE_CONTACT_EMAIL   shown on Contact / Privacy / Terms
 //   VITE_GA_ID           Google Analytics 4 measurement id (G-…)
 //   VITE_ADSENSE_CLIENT  AdSense publisher id (ca-pub-…)
@@ -44,10 +44,10 @@ function trackingHead(s: SiteSettings, withAds: boolean): string {
   const lines = [
     '<script>',
     'window.dataLayer=window.dataLayer||[];function gtag(){dataLayer.push(arguments)}',
-    "var __c=null;try{__c=localStorage.getItem('vyora.consent.v1')}catch(e){}",
+    "var __c=null;try{__c=localStorage.getItem('cutistic.consent.v1')}catch(e){}",
     "var __g=__c==='granted'?'granted':'denied';",
     "gtag('consent','default',{ad_storage:__g,ad_user_data:__g,ad_personalization:__g,analytics_storage:__g,wait_for_update:500});",
-    `window.__vyoraTracking={ga:${s.gaId ? 'true' : 'false'},ads:${ads ? 'true' : 'false'}};`,
+    `window.__cutisticTracking={ga:${s.gaId ? 'true' : 'false'},ads:${ads ? 'true' : 'false'}};`,
   ];
   if (s.gaId) lines.push("gtag('js',new Date());", `gtag('config','${esc(s.gaId)}');`);
   lines.push('</script>');
@@ -60,7 +60,7 @@ function header(nav: string): string {
   const link = (href: string, label: string, key: string) => `<a href="${href}" class="nav-link${nav === key ? ' is-active' : ''}">${label}</a>`;
   return `<header class="site-header">
   <div class="container header-inner">
-    <a href="/" class="brand" aria-label="Vyora home"><img src="/src/assets/logo.jpg" alt="Vyora" width="112" height="28" class="logo-img" /></a>
+    <a href="/" class="brand" aria-label="Cutistic home"><img src="/src/assets/logo.jpg" alt="Cutistic" width="113" height="32" class="logo-img" /></a>
     <nav class="main-nav" aria-label="Main">
       ${link('/#features', 'Features', 'features')}
       ${link('/help/', 'Help Center', 'help')}
@@ -80,7 +80,7 @@ function footer(): string {
   return `<footer class="site-footer">
   <div class="container footer-grid">
     <div class="footer-brand">
-      <img src="/src/assets/logo.jpg" alt="Vyora" width="112" height="28" class="logo-img" />
+      <img src="/src/assets/logo.jpg" alt="Cutistic" width="113" height="32" class="logo-img" />
       <p>The free video editor that runs entirely in your browser. Your files never leave your computer.</p>
     </div>
     <div>
@@ -108,7 +108,7 @@ function footer(): string {
     </div>
   </div>
   <div class="container footer-bottom">
-    <span>© ${year} Vyora. All rights reserved.</span>
+    <span>© ${year} Cutistic. All rights reserved.</span>
     <span>Made for creators · No account needed</span>
   </div>
 </footer>`;
@@ -164,7 +164,7 @@ function renderPage(html: string, url: string, s: SiteSettings): string {
   const isHelp = nav === 'help';
   const body = fill(/<body[^>]*>([\s\S]*)<\/body>/.exec(html)?.[1] ?? '', s);
   const pageUrl = s.siteUrl.replace(/\/$/, '') + url;
-  const fullTitle = url === '/' ? `${title}` : `${title} · Vyora`;
+  const fullTitle = url === '/' ? `${title}` : `${title} · Cutistic`;
   const article = HELP_ARTICLES.find((a) => a.slug === helpSlug);
   const crumbs = isHelp
     ? `<nav class="crumbs container" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/help/">Help Center</a>${article ? `<span>/</span><span aria-current="page">${esc(article.title)}</span>` : ''}</nav>`
@@ -184,7 +184,7 @@ function renderPage(html: string, url: string, s: SiteSettings): string {
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
     <meta property="og:type" content="${article ? 'article' : 'website'}" />
-    <meta property="og:site_name" content="Vyora" />
+    <meta property="og:site_name" content="Cutistic" />
     <meta property="og:title" content="${esc(fullTitle)}" />
     <meta property="og:description" content="${esc(description)}" />
     <meta property="og:url" content="${esc(pageUrl)}" />
@@ -234,9 +234,9 @@ export function htmlEntries(root: string): Record<string, string> {
   return out;
 }
 
-export function vyoraSite(s: SiteSettings): Plugin {
+export function cutisticSite(s: SiteSettings): Plugin {
   return {
-    name: 'vyora-site',
+    name: 'cutistic-site',
     transformIndexHtml: {
       order: 'pre',
       handler(html, ctx) {

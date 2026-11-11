@@ -1,7 +1,7 @@
 import { defineConfig, loadEnv } from 'vite';
 import react from '@vitejs/plugin-react';
 import tailwindcss from '@tailwindcss/vite';
-import { htmlEntries, vyoraSite } from './site/plugin';
+import { htmlEntries, cutisticSite } from './site/plugin';
 
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), 'VITE_');
@@ -10,7 +10,7 @@ export default defineConfig(({ mode }) => {
       react(),
       tailwindcss(),
       // Website pages (landing, help center, legal) around the editor.
-      vyoraSite({
+      cutisticSite({
         siteUrl: env.VITE_SITE_URL || 'https://www.example.com',
         contactEmail: env.VITE_CONTACT_EMAIL || 'support@example.com',
         gaId: env.VITE_GA_ID || '',

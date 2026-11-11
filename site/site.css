@@ -1,5 +1,5 @@
 /* ==========================================================================
-   Vyora website – same palette, type and radii as the editor (src/styles).
+   Cutistic website – same palette, type and radii as the editor (src/styles).
    ========================================================================== */
 
 :root {
@@ -174,7 +174,7 @@ a:hover {
   flex-shrink: 0;
 }
 .logo-img {
-  height: 28px;
+  height: 32px;
   width: auto;
   mix-blend-mode: screen; /* the logo is drawn on black */
 }

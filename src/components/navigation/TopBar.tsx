@@ -16,8 +16,8 @@ function BrandMark() {
   // The logo is drawn on black: "screen" blending makes the black blend into the top bar.
   return (
     // Links to the website's home page (the browser asks first if there are unsaved changes).
-    <a href="/" title="Vyora home" aria-label="Vyora home" className="flex items-center rounded pr-2">
-      <img src={logoUrl} alt="Vyora" draggable={false} className="h-6 w-auto select-none mix-blend-screen" />
+    <a href="/" title="Cutistic home" aria-label="Cutistic home" className="flex items-center rounded pr-2">
+      <img src={logoUrl} alt="Cutistic" draggable={false} className="h-7 w-auto select-none mix-blend-screen" />
     </a>
   );
 }
