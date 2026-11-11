@@ -7,6 +7,7 @@ import { cn } from '../../utils/cn';
 import { IconButton } from '../controls/IconButton';
 import { HEADER_WIDTH, TRACK_COLOR_VAR, TRACK_HEIGHT, TRACK_ICON } from './timelineConfig';
 import { TimelineClip } from './TimelineClip';
+import { openLaneMenu } from './ClipContextMenu';
 import type { ClipDragMode } from './useClipDrag';
 import type { DropGhost } from './dragStore';
 
@@ -186,6 +187,7 @@ export const TimelineTrack = memo(function TimelineTrack({
         )}
         style={{ width: contentWidth }}
         onPointerDown={(e) => onLanePointerDown(e, track.id)}
+        onContextMenu={(e) => openLaneMenu(e, track.id)}
         onDragOver={(e) => dragHandlers.onDragOver(e, track.id)}
         onDragLeave={dragHandlers.onDragLeave}
         onDrop={(e) => dragHandlers.onDrop(e, track.id)}

@@ -10,18 +10,13 @@ import { IconButton } from '../controls/IconButton';
 import { Tooltip } from '../controls/Tooltip';
 import { ProjectNameEditor } from './ProjectNameEditor';
 import { cn } from '../../utils/cn';
+import logoUrl from '../../assets/logo.jpg';
 
 function BrandMark() {
+  // The logo is drawn on black: "screen" blending makes the black blend into the top bar.
   return (
-    <div className="flex items-center gap-2 pr-2">
-      <svg width="22" height="22" viewBox="0 0 32 32" aria-hidden>
-        <rect width="32" height="32" rx="7" fill="var(--color-accent)" />
-        <path d="M12 9.5l12 6.5-12 6.5z" fill="#fff" />
-        <rect x="7.5" y="9.5" width="2.5" height="13" rx="1" fill="#fff" />
-      </svg>
-      <span className="text-[13px] font-semibold tracking-tight">
-        Reelforge <span className="font-normal text-fg-muted">Studio</span>
-      </span>
+    <div className="flex items-center pr-2">
+      <img src={logoUrl} alt="Vyora" draggable={false} className="h-6 w-auto select-none mix-blend-screen" />
     </div>
   );
 }

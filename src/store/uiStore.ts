@@ -40,6 +40,8 @@ interface UiState {
   snapping: boolean;
   /** Copied clips (Ctrl+C) – plain data, never media binaries. */
   clipboard: Clip[];
+  /** Bumped by "Show Properties": the inspector switches to the selected item. */
+  propertiesFocus: number;
 
   mediaFilter: MediaFilter;
   mediaSearch: string;
@@ -56,6 +58,8 @@ interface UiState {
   selectSection: (section: SidebarSection) => void;
   setLibraryOpen: (open: boolean) => void;
   setPropertiesOpen: (open: boolean) => void;
+  /** Opens the properties panel on the selected item. */
+  focusProperties: () => void;
   setSelection: (selection: Selection) => void;
   /** Shows a library item in the preview (switches to source mode). */
   setPreviewMedia: (id: string | null) => void;
@@ -89,6 +93,7 @@ export const useUiStore = create<UiState>()((set, get) => ({
   previewMode: 'timeline',
   snapping: true,
   clipboard: [],
+  propertiesFocus: 0,
 
   mediaFilter: 'all',
   mediaSearch: '',
@@ -110,6 +115,7 @@ export const useUiStore = create<UiState>()((set, get) => ({
   },
   setLibraryOpen: (libraryOpen) => set({ libraryOpen }),
   setPropertiesOpen: (propertiesOpen) => set({ propertiesOpen }),
+  focusProperties: () => set((s) => ({ propertiesOpen: true, propertiesFocus: s.propertiesFocus + 1 })),
   setSelection: (selection) =>
     set({ selection: selection.kind === 'clips' && selection.ids.length === 0 ? { kind: 'none' } : selection }),
   setPreviewMedia: (previewMediaId) =>

@@ -275,3 +275,27 @@ void main() {
   }
   o = c;
 }`;
+
+/**
+ * AI background removal: the person mask (R) turns into alpha with a soft
+ * edge; the background becomes transparent, a colour, or a blurred copy.
+ * Output is premultiplied like every other layer texture.
+ */
+export const FS_MATTE = `#version 300 es
+precision highp float;
+in vec2 vUv;
+uniform sampler2D uTex;
+uniform sampler2D uMask;
+uniform sampler2D uBg;
+uniform int uMode;
+uniform vec3 uColor;
+uniform float uThreshold, uSoft;
+out vec4 o;
+void main() {
+  vec4 fg = texture(uTex, vUv);
+  float m = texture(uMask, vUv).r;
+  float a = smoothstep(uThreshold - uSoft, uThreshold + uSoft, m);
+  if (uMode == 0) o = fg * a;
+  else if (uMode == 1) o = vec4(mix(uColor * fg.a, fg.rgb, a), fg.a);
+  else o = mix(texture(uBg, vUv), fg, a);
+}`;

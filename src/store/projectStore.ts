@@ -182,6 +182,7 @@ export type ClipPropertyPatch = Partial<
     | 'animation'
     | 'text'
     | 'audio'
+    | 'matte'
   >
 >;
 export interface ClipMove {
@@ -294,6 +295,10 @@ function applyClipPatch(d: ProjectDocument, clip: Clip, patch: ClipPropertyPatch
       pan: clamp(a.pan, -1, 1),
       noiseReduction: clamp(a.noiseReduction, 0, 1),
     };
+  }
+  if (next.matte) {
+    const m = next.matte;
+    next.matte = { ...m, threshold: clamp(m.threshold, 0.05, 0.95), feather: clamp(m.feather, 0, 1), blur: clamp(m.blur, 0, 1) };
   }
   if (clip.text) {
     next.speed = 1;

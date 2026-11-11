@@ -258,6 +258,8 @@ export interface Clip {
   animation?: ClipAnimation;
   /** Audio processing (Phase 4; absent = neutral). */
   audio?: ClipAudio;
+  /** AI background removal (Phase 5; absent = off). */
+  matte?: ClipMatte;
   /** Present on text clips (which have no media: `mediaId` is ''). */
   text?: TextData;
 }
@@ -273,6 +275,8 @@ export interface Track {
   muted: boolean;
   /** Track volume (0..2, default 1). Applies to every clip with audio on the track. */
   volume?: number;
+  /** Text track holding generated / imported subtitles (Phase 5). */
+  captions?: boolean;
 }
 
 /** The undoable, serialisable part of a project. */
@@ -301,6 +305,25 @@ export interface SavedProject {
 // ---- Audio (Phase 4) --------------------------------------------------------------
 
 /** Per-clip audio processing. All values neutral at 0 (except eq bands, also 0 dB). */
+/** What replaces the removed background of a person (Phase 5). */
+export type MatteMode = 'transparent' | 'color' | 'blur';
+
+/** AI background removal settings of a video / image clip. */
+export interface ClipMatte {
+  enabled: boolean;
+  mode: MatteMode;
+  /** Replacement colour (mode 'color'). */
+  color: string;
+  /** 'fast': selfie segmenter (≈0.25 MB). 'quality': multi-class selfie model (≈16 MB, better hair / edges). */
+  model: 'fast' | 'quality';
+  /** 0..1 – how confident the model must be that a pixel is the person. */
+  threshold: number;
+  /** 0..1 – edge softness. */
+  feather: number;
+  /** 0..1 – background blur strength (mode 'blur'). */
+  blur: number;
+}
+
 export interface ClipAudio {
   /** Clip gain in dB (-24..+24); "Normalize" sets this from the measured peak. */
   gainDb: number;
@@ -345,7 +368,8 @@ export type SidebarSection =
   | 'effects'
   | 'transitions'
   | 'filters'
-  | 'captions';
+  | 'captions'
+  | 'ai';
 
 export type PreviewQuality = 'full' | 'half' | 'quarter';
 

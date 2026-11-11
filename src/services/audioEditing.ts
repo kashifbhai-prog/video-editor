@@ -67,21 +67,40 @@ export async function extractAudio(clipId: string): Promise<string | null> {
     notify(`"${media.name}" has no audio track to extract.`, 'warning');
     return null;
   }
-  const base = media.name.replace(/\.[^.]+$/, '');
-  const fileName = `${base} (audio).wav`;
-  const store = useMediaStore.getState();
-  let audioMedia = store.items.find((m) => m.name === fileName && m.status === 'ready');
-  if (!audioMedia) {
-    // Whole file, so the new clip keeps the same trim handles as the video clip.
-    const wav = await encodeWav(buf);
-    await store.importFiles([new File([wav], fileName, { type: 'audio/wav' })]);
-    const matches = useMediaStore.getState().items.filter((m) => m.name === fileName && m.status === 'ready');
-    audioMedia = matches[matches.length - 1];
-  }
+  const base = media.name.replace(/.[^.]+$/, '');
+  const audioMedia = await importAudioBuffer(buf, `${base} (audio).wav`, true);
   if (!audioMedia) {
     notify('The extracted audio could not be imported.', 'error');
     return null;
   }
+  const newId = placeAudioForVideoClip(clipId, audioMedia, '(audio)');
+  if (newId) {
+    selectClips([newId]);
+    notify('Audio extracted to its own clip; the video clip was muted.', 'success');
+  }
+  return newId;
+}
+
+/**
+ * Encodes a buffer as WAV and imports it into the media library (reusing an
+ * existing ready item of the same name when `reuse`). Returns the media item.
+ */
+export async function importAudioBuffer(buf: AudioBuffer, fileName: string, reuse: boolean): Promise<MediaItem | undefined> {
+  const store = useMediaStore.getState();
+  const existing = reuse ? store.items.find((m) => m.name === fileName && m.status === 'ready') : undefined;
+  if (existing) return existing;
+  const wav = await encodeWav(buf);
+  await store.importFiles([new File([wav], fileName, { type: 'audio/wav' })]);
+  const matches = useMediaStore.getState().items.filter((m) => m.name === fileName && m.status === 'ready');
+  return matches[matches.length - 1];
+}
+
+/**
+ * Places `audioMedia` (a whole-file audio version of a video clip's source) on
+ * an audio track at the clip's exact timing, copying its speed / volume /
+ * processing, and mutes the video clip. One undo step. Returns the new clip id.
+ */
+export function placeAudioForVideoClip(clipId: string, audioMedia: MediaItem, suffix: string, audioPatch?: Partial<ClipAudio>): string | null {
   const current = project().document.clips[clipId];
   if (!current) return null;
   let newId: string | null = null;
@@ -90,14 +109,14 @@ export async function extractAudio(clipId: string): Promise<string | null> {
     const dur = clipDuration(current);
     const free = doc.tracks.find((t) => t.type === 'audio' && !t.locked && isRangeFree(clipsOnTrack(doc, t.id), current.start, dur));
     const trackId = free?.id ?? project().addTrack('audio');
-    newId = project().addClip(audioMedia!, trackId, current.start);
+    newId = project().addClip(audioMedia, trackId, current.start);
     if (!newId) return;
     const kf = current.keyframes?.volume;
     project().updateClip(newId, {
       speed: current.speed,
       volume: current.volume,
-      audio: current.audio,
-      name: `${current.name} (audio)`,
+      audio: audioPatch ? { ...clipAudio(current), ...audioPatch } : current.audio,
+      name: `${current.name} ${suffix}`,
       keyframes: kf ? { volume: kf } : undefined,
     });
     // addClip placed it at the start; apply the exact range (updateClip does not move timing fields).
@@ -106,9 +125,5 @@ export async function extractAudio(clipId: string): Promise<string | null> {
     delete keyframes.volume;
     project().updateClip(clipId, { volume: 0, keyframes });
   });
-  if (newId) {
-    selectClips([newId]);
-    notify('Audio extracted to its own clip; the video clip was muted.', 'success');
-  }
   return newId;
 }
