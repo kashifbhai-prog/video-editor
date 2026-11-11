@@ -12,6 +12,9 @@ import { InlineTextInput } from '../controls/InlineTextInput';
 import { InfoRow, PropertyRow, PropertySection } from './PropertySection';
 import { SecondsField } from './controls';
 import { AudioSection } from './AudioSection';
+import { lazy, Suspense } from 'react';
+
+const BackgroundSection = lazy(() => import('../ai/BackgroundSection').then((m) => ({ default: m.BackgroundSection })));
 import { AnimationSection, ColorSection, EffectsSection, KeyframesSection, SpeedSection, TextSection, TransformSection } from './AdvancedSections';
 
 export function ClipProperties({ clip }: { clip: Clip }) {
@@ -97,6 +100,11 @@ export function ClipProperties({ clip }: { clip: Clip }) {
 
       {hasAudio && <AudioSection clip={clip} track={track} locked={locked} isVideo={media?.kind === 'video'} />}
 
+      {visual && !isText && (media?.kind === 'video' || media?.kind === 'image') && (
+        <Suspense fallback={null}>
+          <BackgroundSection clip={clip} locked={locked} />
+        </Suspense>
+      )}
       {visual && <ColorSection clip={clip} locked={locked} />}
       {visual && <EffectsSection clip={clip} locked={locked} />}
       <KeyframesSection clip={clip} locked={locked} />

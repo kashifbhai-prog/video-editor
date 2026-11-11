@@ -1,7 +1,7 @@
 import type { EffectType, TransitionType } from '../../types';
 import { layerGeometry, type CompositorFrame, type LayerGeometry, type VisualLayer } from '../compositor';
 import { getTextBitmap, TEXT_REFERENCE_HEIGHT } from '../textRenderer';
-import { FS_BLUR, FS_EFFECT, FS_GLOW, FS_GRADE, FS_LAYER, FS_TRANSITION, VS_FULL, VS_LAYER } from './shaders';
+import { FS_BLUR, FS_EFFECT, FS_GLOW, FS_GRADE, FS_LAYER, FS_MATTE, FS_TRANSITION, VS_FULL, VS_LAYER } from './shaders';
 
 // ---------------------------------------------------------------------------
 // WebGL2 compositor. Per visual layer:
@@ -87,6 +87,7 @@ export class GLRenderer {
   private progGlow!: Program;
   private progEffect!: Program;
   private progTransition!: Program;
+  private progMatte!: Program;
   private vao!: WebGLVertexArrayObject;
   private quad!: WebGLBuffer;
   private textures = new Map<object | string, TexEntry>();
@@ -136,6 +137,7 @@ export class GLRenderer {
     this.progGlow = this.program(VS_FULL, FS_GLOW);
     this.progEffect = this.program(VS_FULL, FS_EFFECT);
     this.progTransition = this.program(VS_FULL, FS_TRANSITION);
+    this.progMatte = this.program(VS_FULL, FS_MATTE);
     this.quad = gl.createBuffer()!;
     gl.bindBuffer(gl.ARRAY_BUFFER, this.quad);
     gl.bufferData(gl.ARRAY_BUFFER, new Float32Array([0, 0, 1, 0, 0, 1, 1, 1]), gl.STATIC_DRAW);
@@ -255,7 +257,7 @@ export class GLRenderer {
     }
 
     const temps: Fbo[] = [];
-    if (layer.grade || layer.effects.length) {
+    if (layer.grade || layer.effects.length || layer.matte) {
       tex = this.process(layer, tex, sw, sh, geo, temps);
     }
 
@@ -320,6 +322,29 @@ export class GLRenderer {
     gl.uniform3fv(g.u('uHighlightTint'), layer.grade?.highlightTint ?? [0, 0, 0]);
     this.bindTex(0, src);
     this.drawQuad();
+
+    // 1b. AI background removal (before effects, so effects see the composite).
+    if (layer.matte) {
+      const m = layer.matte;
+      const maskTex = this.textureFor(m.key, m.mask, false);
+      const bg = m.mode === 'blur' ? this.blur2(cur, (4 + m.blur * 44) * refToProc, true, acquire) : null;
+      const out = acquire();
+      this.bindTarget(out);
+      const p = this.progMatte;
+      gl.useProgram(p.prog);
+      gl.uniform1i(p.u('uTex'), 0);
+      gl.uniform1i(p.u('uMask'), 1);
+      gl.uniform1i(p.u('uBg'), 2);
+      gl.uniform1i(p.u('uMode'), m.mode === 'transparent' ? 0 : m.mode === 'color' ? 1 : 2);
+      gl.uniform3fv(p.u('uColor'), parseColor(m.color));
+      gl.uniform1f(p.u('uThreshold'), m.threshold);
+      gl.uniform1f(p.u('uSoft'), 0.02 + m.feather * 0.25);
+      this.bindTex(0, cur.tex);
+      this.bindTex(1, maskTex);
+      this.bindTex(2, (bg ?? cur).tex);
+      this.drawQuad();
+      cur = out;
+    }
 
     // 2. Effects, in order.
     for (const fx of layer.effects) {

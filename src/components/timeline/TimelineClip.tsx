@@ -12,6 +12,7 @@ import { cn } from '../../utils/cn';
 import { Waveform } from '../media/MediaItemView';
 import { TRACK_COLOR_VAR } from './timelineConfig';
 import type { ClipDragMode } from './useClipDrag';
+import { openClipMenu } from './ClipContextMenu';
 
 interface TimelineClipProps {
   clip: Clip;
@@ -186,6 +187,7 @@ export const TimelineClip = memo(function TimelineClip({
       data-clip-id={clip.id}
       title={`${clip.name}\n${formatDuration(duration)} · starts ${clip.start.toFixed(2)}s`}
       onPointerDown={(e) => onPointerDown(e, clip.id, 'move')}
+      onContextMenu={(e) => openClipMenu(e, clip.id)}
       className={cn(
         'group absolute top-[2px] overflow-hidden rounded-[5px] border select-none',
         locked ? 'cursor-not-allowed' : 'cursor-grab active:cursor-grabbing',

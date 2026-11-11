@@ -7,6 +7,8 @@ import { usePlaybackStore } from '../store/playbackStore';
 import { saveProject } from '../services/projectService';
 import {
   copySelection,
+  cutSelection,
+  trimSelectedToPlayhead,
   deleteSelection,
   duplicateSelection,
   pasteClipboard,
@@ -102,6 +104,11 @@ export function useKeyboardShortcuts() {
             e.preventDefault();
             copySelection();
           }
+        } else if (key === 'x') {
+          if (ui.selection.kind === 'clips') {
+            e.preventDefault();
+            cutSelection();
+          }
         } else if (key === 'v') {
           e.preventDefault();
           pasteClipboard();
@@ -143,6 +150,14 @@ export function useKeyboardShortcuts() {
         case 's':
         case 'S':
           splitSelectedAtPlayhead();
+          break;
+        case 'q':
+        case 'Q':
+          trimSelectedToPlayhead('start');
+          break;
+        case 'w':
+        case 'W':
+          trimSelectedToPlayhead('end');
           break;
         case 'm':
         case 'M':

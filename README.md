@@ -6,6 +6,7 @@ A browser-based professional video editor.
 - **Phase 2** – Core editing engine (multi-track timeline, trim/split/move, synced preview) ✅
 - **Phase 3** – Advanced tools: keyframes, transforms, transitions, effects, colour & filters, speed/reverse, text, stickers ✅
 - **Phase 4** – Audio editing (gain, fades, EQ, balance, noise reduction, normalise, extract, voice-over) and real MP4 export ✅
+- **Phase 5** – On-device AI: auto captions, silence removal, audio enhancement, smart cuts, background removal, summary & highlights ✅ (free, no API key)
 
 ## Run locally
 
@@ -48,6 +49,11 @@ npm run preview    # serve the production build
   Audio panel → **Record voice-over** (asks for microphone permission when pressed).
 - **Export** (Ctrl+E): preset, file name, aspect ratio, resolution, frame rate, codec and bitrates →
   progress with cancel → verified result with preview and download.
+- **Captions** panel: Generate captions (language, model) → edit text / timing, style all captions,
+  shift sync, import / export .srt. Captions are text clips on the "Captions" track (exported).
+- **AI tools** panel: Silence removal (review on the timeline, remove in one undo step), Audio
+  enhancement (A/B preview, apply), Smart cuts (accept / reject), Background removal, Summary &
+  highlights (insert a highlight reel). Background removal is also in a clip's Properties.
 
 ## Architecture
 
@@ -72,6 +78,9 @@ src/
     audioMixer        preview Web Audio graph (element → chain → envelope → track bus)
     export/           exporter (decode → compose → render → encode → mux → verify),
                       audioRender (offline mixdown), capabilities, exportSettings, colorMatch
+    rippleEdit        PURE ripple removal / range copy across all tracks (silence, AI cuts, highlights)
+    ai/               audioAnalysis (levels, pauses, speech windows), videoAnalysis (frame features,
+                      scene cuts, duplicates), matte (MediaPipe person masks), summarize (TextRank)
   store/
     projectStore      undoable document (tracks, clips, transitions) with snapshot history
     mediaStore        media library, import pipeline, object-URL lifetimes
@@ -87,7 +96,10 @@ src/
     audioEditing      normalise, extract audio, clip audio settings
     audioDsp          worker client (time-stretch, WAV, peak) + decoded-audio cache
     voiceRecorder     microphone recording → imported clip on the timeline
+    ai/               aiJobs (progress / cancel / errors), aiStore (results), captions, silence,
+                      enhance, smartEdit, background, summary, timelineAudio, aiWorkerClient
   workers/audioWorker WSOLA time-stretch, WAV encoding, peak scan (off the UI thread)
+  workers/aiWorker    Whisper (Transformers.js), RNNoise, offline peak limiter
   assets/stickers     built-in original SVG stickers
   hooks/            sequence sync, keyboard shortcuts, autosave, global file drop, ...
   components/
@@ -96,6 +108,7 @@ src/
     properties/       PropertiesPanel, ClipProperties + AdvancedSections, TransitionProperties
     library/          Text, Stickers, Effects, Transitions and Filters panels
     preview/          PreviewPlayer, TransformOverlay (handles, inline text editing)
+    ai/               CaptionsPanel, AiToolsPanel, BackgroundSection, AiTimelineOverlay, AiShared
     media/ navigation/ layout/ controls/
 ```
 
@@ -191,6 +204,51 @@ handles demuxing and muxing in a few hundred KB, loaded only when the Export dia
 | Older browsers | Export disabled with an explanation (no WebCodecs) |
 
 The Export dialog probes the real encoder and GPU and only enables resolutions / codecs that work.
+
+### AI tools (Phase 5)
+
+Every AI feature runs **on the user's device** in the browser: no account, no API key, no
+upload, no per-use cost. Models are downloaded once from public model hubs and then served
+from the browser cache (they keep working offline).
+
+| Feature | How it works | Model / library | Download (once) |
+|---|---|---|---|
+| Auto captions | Timeline mix (same mixdown as the export) → speech windows → Whisper with **word-level timestamps** → cues built from word timings (sentence ends, pauses, two balanced lines) → text clips on a "Captions" track | Whisper tiny / base / small (`onnx-community/*_timestamped`, MIT) via Transformers.js 4.3.2 + ONNX Runtime Web (CPU/WebAssembly by default, WebGPU optional) | tiny 41 MB, base 77 MB, small 249 MB (GPU variants are larger: 120 / 206 / 586 MB) |
+| Silence removal | Level envelope of the timeline mix, adaptive threshold, minimum pause + padding; ripple cut across all unlocked tracks | Signal analysis (no model) | – |
+| Audio enhancement | RNNoise neural noise removal (20 ms latency compensated) → voice-clarity EQ (shared chain) → loudness to −16 dBFS speech with a look-ahead peak limiter (−1 dBFS) → rendered to a new WAV; A/B preview of 8 s | `@shiguredo/rnnoise-wasm` 2025.1.5 (RNNoise, BSD-3; bundled) | bundled (≈4.8 MB, loaded on use) |
+| Volume balancing | Speech loudness of every clip measured through its own chain; gains set to one common, peak-safe level | – | – |
+| Smart cuts | Frames decoded with WebCodecs at 5 fps (64×36 features: colour histogram, dHash, motion, focus); scene cuts refined to the exact frame; repeated takes, dark / blurry / frozen + silent footage, long pauses → suggestions | Signal / image analysis (no model) | – |
+| Background removal | Person mask per source frame (letterboxed, second zoomed pass for small subjects), applied in the shared WebGL compositor → identical in preview and export | MediaPipe selfie segmenter (fast) / selfie multiclass (quality) via `@mediapipe/tasks-vision` 1.1.1 (Apache-2.0) | fast 0.25 MB, quality 16 MB (+ runtime bundled) |
+| Summary & highlights | Extractive: sentences ranked with TextRank over TF-IDF (English + Urdu stop words), keywords, timestamped moments; highlights inserted as a reel of normal clips (all tracks, in sync) | – | – |
+
+Network endpoints used only for the one-time model downloads: `huggingface.co` (Whisper +
+its CDN), `cdn.jsdelivr.net` (ONNX Runtime WebAssembly files, used by Transformers.js),
+`storage.googleapis.com` (MediaPipe models). Media never leaves the browser.
+
+**Not included (would need a paid external service):** an abstractive, newly worded summary
+(an LLM). The summary is made of the video's own sentences.
+
+AI results that are analyses (pauses, scene suggestions, summary) live in memory and are
+marked stale as soon as the timeline changes; everything they lead to (captions, cuts,
+enhanced audio, background settings, highlight clips) is an ordinary, undoable, saved edit
+that the export renders.
+
+## Known limitations (Phase 5)
+
+- Whisper quality depends on the model: English is very good with *base*; **Urdu needs the
+  *small* model** and still makes mistakes (Urdu was not tested with real Urdu speech – no
+  Urdu test recording was available). Language "auto" can mis-detect Urdu as Hindi; pick Urdu.
+- Transcription speed (measured, CPU / WebAssembly, *base*): 21.5 s of audio in 16–28 s
+  including model load from the cache; the first run also downloads the model. Long videos take a while;
+  WebGPU is faster but needs a larger download and a compatible GPU.
+- Background removal recognises **people only**; hair and fast motion edges are softer with
+  the *fast* model. Export with background removal is much slower: measured 6 s of 1080p in 14.8 s
+  (≈ 12 fps) with the *quality* model, vs ≈ 91 fps without background removal. Masks are computed per frame (no temporal smoothing).
+- RNNoise removes noise between and behind speech very strongly (pauses become silent); use
+  the Strength slider for a more natural room tone. It is trained for speech, not music.
+- Smart cuts analyse one clip at a time; duplicate detection compares whole scenes visually
+  (retakes with different framing are not detected).
+- Not tested: real camera / phone footage of people, real Urdu speech, Firefox / Safari.
 
 ## Known limitations (Phase 4)
 

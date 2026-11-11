@@ -18,6 +18,7 @@ import { GLRenderer } from '../gl/glRenderer';
 import { renderAudioMix } from './audioRender';
 import { exportSize } from './exportSettings';
 import { matchPreviewColorSpace, retagFrame } from './colorMatch';
+import { matteEngine } from '../ai/matte';
 
 // ---------------------------------------------------------------------------
 // Export pipeline (all real, all in the browser):
@@ -78,6 +79,8 @@ interface DecodedFrame {
   source: VideoFrame | OffscreenCanvas;
   width: number;
   height: number;
+  /** Source timestamp (seconds). */
+  ts: number;
 }
 
 /** Per video clip: a monotonic stream of decoded frames for the output frames where the clip is live. */
@@ -112,9 +115,9 @@ class ClipFrames {
         const vf = s.toVideoFrame();
         this.retagged = await retagFrame(vf, this.colorSpace);
         vf.close();
-        this.frame = { source: this.retagged, width: s.displayWidth, height: s.displayHeight };
+        this.frame = { source: this.retagged, width: s.displayWidth, height: s.displayHeight, ts: s.timestamp };
       } else {
-        this.frame = { source: s.toCanvasImageSource(), width: s.displayWidth, height: s.displayHeight };
+        this.frame = { source: s.toCanvasImageSource(), width: s.displayWidth, height: s.displayHeight, ts: s.timestamp };
       }
     }
     return this.current ? this.frame : null;
@@ -204,6 +207,15 @@ export async function runExport(opts: {
       }
       report('prepare', (i + 1) / Math.max(1, videoItems.length));
     }
+    // AI background removal: load the models first – a clip with background
+    // removal is never exported without it.
+    const matteModels = new Set(seq.items.filter((it) => it.visible && it.clip.matte?.enabled && it.media && it.media.kind !== 'audio').map((it) => it.clip.matte!.model));
+    for (const m of matteModels) {
+      checkAbort(signal);
+      await matteEngine.load(m).catch((e) => {
+        throw new ExportError(`The background-removal model could not be loaded (${e instanceof Error ? e.message : e}). Connect to the internet once so it can be downloaded, or turn background removal off.`);
+      });
+    }
     for (const it of seq.items) {
       if (it.media?.kind !== 'image' || images.has(it.media.url)) continue;
       const img = new Image();
@@ -256,7 +268,7 @@ export async function runExport(opts: {
       const media = it.media!;
       if (media.kind === 'image') {
         const img = images.get(media.url);
-        return img ? { type: 'media', source: img, width: img.naturalWidth, height: img.naturalHeight, dynamic: false } : null;
+        return img ? { type: 'media', source: img, width: img.naturalWidth, height: img.naturalHeight, dynamic: false, frameKey: media.id } : null;
       }
       const s = samples.get(it.clip.id);
       if (!s) return null;
@@ -267,6 +279,7 @@ export async function runExport(opts: {
         height: s.height,
         dynamic: true,
         key: `${it.clip.id}#${n % 2}`,
+        frameKey: `${media.id}@${s.ts.toFixed(3)}`,
       };
     };
 
@@ -278,7 +291,7 @@ export async function runExport(opts: {
         const it = seq.items.find((x) => x.clip.id === id)!;
         if (isItemActive(seq, it, t)) samples.set(id, await cf.at(n));
       }
-      const layers = composeLayers(seq, t, provider(n, samples));
+      const layers = composeLayers(seq, t, provider(n, samples), { strictMatte: true });
       if (!renderer.render({ width, height, background: doc.canvas.backgroundColor, layers })) {
         throw new ExportError('The GPU context was lost during rendering (often low graphics memory). Try a lower resolution.');
       }

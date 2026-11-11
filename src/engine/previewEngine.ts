@@ -6,6 +6,7 @@ import { quantizeToFrame } from './timelineModel';
 import { composeLayers, isItemActive, sourceTarget, videoSampleTarget, type MediaContentProvider } from './composition';
 import { audioEnvelopeAt, clipAudio } from './audio';
 import { audioMixer } from './audioMixer';
+import { matteEngine } from './ai/matte';
 
 // ---------------------------------------------------------------------------
 // PreviewEngine – the timeline playback engine.
@@ -43,6 +44,12 @@ interface Player {
   hasFrame: boolean;
   /** A seek finished and its frame has not been drawn yet (seek-driven playback waits for it). */
   pendingPresent: boolean;
+  /**
+   * Identity of the frame the element currently SHOWS. While it seeks, currentTime
+   * already reports the target but the old frame is still displayed – per-frame AI
+   * masks must follow the picture, not the clock.
+   */
+  frameKey?: string;
   dispose: () => void;
 }
 
@@ -211,7 +218,7 @@ class PreviewEngine {
     if (media.kind === 'image') {
       const img = this.images.get(media.url);
       if (!img?.complete || !img.naturalWidth) return null;
-      return { type: 'media', source: img, width: img.naturalWidth, height: img.naturalHeight, dynamic: false };
+      return { type: 'media', source: img, width: img.naturalWidth, height: img.naturalHeight, dynamic: false, frameKey: media.id };
     }
     const p = this.players.get(it.clip.id);
     const v = p?.el as HTMLVideoElement | undefined;
@@ -220,10 +227,11 @@ class PreviewEngine {
     if (ready) {
       p.hasFrame = true;
       p.pendingPresent = false;
+      if (!v.seeking) p.frameKey = `${media.id}@${v.currentTime.toFixed(3)}`;
     }
     // While seeking (scrubbing, reverse playback) hold the last decoded frame instead of flashing the background.
     if (!p.hasFrame) return null;
-    return { type: 'media', source: v, width: v.videoWidth, height: v.videoHeight, dynamic: ready };
+    return { type: 'media', source: v, width: v.videoWidth, height: v.videoHeight, dynamic: ready, frameKey: p.frameKey };
   };
 
   /** Envelope gain the mixer applies to a clip's audio right now (null when not routed). Diagnostics / tests. */
@@ -533,3 +541,6 @@ class PreviewEngine {
 }
 
 export const previewEngine = new PreviewEngine();
+
+// Redraw when a background-removal model finishes loading (masks appear without pressing play).
+matteEngine.subscribe(() => previewEngine.emitFrame());

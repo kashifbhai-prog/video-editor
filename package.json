@@ -10,6 +10,9 @@
     "preview": "vite preview"
   },
   "dependencies": {
+    "@huggingface/transformers": "4.3.2",
+    "@mediapipe/tasks-vision": "1.1.1",
+    "@shiguredo/rnnoise-wasm": "2025.1.5",
     "lucide-react": "^0.468.0",
     "mediabunny": "1.62.1",
     "react": "^18.3.1",

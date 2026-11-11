@@ -29,6 +29,8 @@ import {
   type LibraryDragItem,
 } from './dragStore';
 import { HEADER_WIDTH, MIN_TIMELINE_SECONDS, RULER_HEIGHT, TIMELINE_TAIL_SECONDS } from './timelineConfig';
+import { AiTimelineOverlay } from '../ai/AiTimelineOverlay';
+import { TimelineContextMenus } from './ClipContextMenu';
 
 function usePlayheadX(pps: number) {
   return usePlaybackStore((s) => s.timelineTime) * pps;
@@ -209,6 +211,8 @@ export function Timeline() {
   const onSelectTrack = useCallback((id: string) => setSelection({ kind: 'track', id }), [setSelection]);
   const onLanePointerDown = useCallback(
     (e: React.PointerEvent<HTMLDivElement>, trackId: string) => {
+      // Right button: leave the selection to the context menu (keeps multi-selections).
+      if (e.button === 2) return;
       setSelection({ kind: 'track', id: trackId });
       beginScrub(e);
     },
@@ -432,6 +436,8 @@ export function Timeline() {
             </div>
           </div>
 
+          <AiTimelineOverlay pps={pps} />
+          <TimelineContextMenus />
           <PlayheadLine pps={pps} />
           <SnapGuide pps={pps} />
         </div>

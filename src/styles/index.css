@@ -182,3 +182,8 @@
 @keyframes tr-slide-left { from { transform: translateX(100%); } to { transform: translateX(0); } }
 @keyframes tr-slide-right { from { transform: translateX(-100%); } to { transform: translateX(0); } }
 @keyframes tr-blur { 0% { opacity: 0; filter: blur(6px); } 50% { opacity: 0.5; filter: blur(6px); } 100% { opacity: 1; filter: blur(0); } }
+
+/* Context menus: subtle open animation (respecting reduced motion). */
+@keyframes ctx-menu-in { from { opacity: 0; transform: scale(0.97) translateY(-2px); } to { opacity: 1; transform: none; } }
+.ctx-menu-anim { animation: ctx-menu-in 90ms ease-out; }
+@media (prefers-reduced-motion: reduce) { .ctx-menu-anim { animation: none; } }

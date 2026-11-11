@@ -7,6 +7,7 @@ import {
   Sparkles,
   Type,
   ArrowRightLeft,
+  WandSparkles,
   type LucideIcon,
 } from 'lucide-react';
 import { useUiStore } from '../../store/uiStore';
@@ -23,6 +24,7 @@ export const SIDEBAR_SECTIONS: { id: SidebarSection; label: string; icon: Lucide
   { id: 'transitions', label: 'Transitions', icon: ArrowRightLeft },
   { id: 'filters', label: 'Filters', icon: SlidersHorizontal },
   { id: 'captions', label: 'Captions', icon: Captions },
+  { id: 'ai', label: 'AI tools', icon: WandSparkles },
 ];
 
 export function LeftSidebar() {

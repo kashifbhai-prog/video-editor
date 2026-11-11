@@ -1,4 +1,4 @@
-import type { ClipEffect, ColorAdjustments, CropRect, FitMode, TextData, TransitionType } from '../types';
+import type { ClipEffect, ColorAdjustments, CropRect, FitMode, MatteMode, TextData, TransitionType } from '../types';
 import type { ResolvedVisual } from './animation';
 import { getTextBitmap, TEXT_REFERENCE_HEIGHT } from './textRenderer';
 
@@ -21,6 +21,8 @@ export type LayerContent =
       dynamic: boolean;
       /** Texture cache key when the source object changes every frame (decoded frames). */
       key?: string;
+      /** Identity of the SOURCE frame shown (media id + source time) – keys per-frame AI masks. */
+      frameKey?: string;
     }
   | { type: 'text'; text: TextData; visibleChars: number | null };
 
@@ -40,6 +42,19 @@ export interface VisualLayer {
   /** Timeline seconds – seeds animated effects (noise, grain, glitch) deterministically. */
   time: number;
   fps: number;
+  /** AI background removal: the person mask of this frame + how to replace the background. */
+  matte?: LayerMatte;
+}
+
+export interface LayerMatte {
+  /** Greyscale person confidence (R channel), covering the full source frame. */
+  mask: ImageData;
+  key: string;
+  mode: MatteMode;
+  color: string;
+  threshold: number;
+  feather: number;
+  blur: number;
 }
 
 export interface Grade {

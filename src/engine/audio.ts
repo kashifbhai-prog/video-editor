@@ -143,13 +143,14 @@ export function createAudioChain(ctx: BaseAudioContext, a: ClipAudio, withGate: 
   const eq = EQ_BANDS.map((f) => {
     const b = ctx.createBiquadFilter();
     b.type = 'peaking';
-    b.frequency.value = f;
+    // Stay below Nyquist (the AI analysis renders at 16 kHz).
+    b.frequency.value = Math.min(f, ctx.sampleRate * 0.45);
     b.Q.value = 1.1;
     return b;
   });
   const treble = ctx.createBiquadFilter();
   treble.type = 'highshelf';
-  treble.frequency.value = 8000;
+  treble.frequency.value = Math.min(8000, ctx.sampleRate * 0.45);
   const pan = ctx.createStereoPanner();
   const out = ctx.createGain();
 

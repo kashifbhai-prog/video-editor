@@ -175,8 +175,16 @@ export const canSplitAt = (clip: Clip, t: number) =>
   t >= clip.start + MIN_CLIP_DURATION - EPS && t <= clipEnd(clip) - MIN_CLIP_DURATION + EPS;
 
 export function splitClip(clip: Clip, t: number, newId: string, isStill: boolean): [Clip, Clip] | null {
-  const end = clipEnd(clip);
   if (!canSplitAt(clip, t)) return null;
+  return splitClipAt(clip, t, newId, isStill);
+}
+
+/**
+ * splitClip without the minimum-length rule – for edits that keep only ONE of
+ * the parts (ripple cuts, highlight crops), where the other part may be tiny.
+ */
+export function splitClipAt(clip: Clip, t: number, newId: string, isStill: boolean): [Clip, Clip] {
+  const end = clipEnd(clip);
   let left: Clip;
   let right: Clip;
   if (isStill) {
@@ -210,6 +218,11 @@ export function splitClip(clip: Clip, t: number, newId: string, isStill: boolean
   if (clip.animation) {
     left.animation = { ...clip.animation, out: { ...clip.animation.out, type: 'none' } };
     right.animation = { ...clip.animation, in: { ...clip.animation.in, type: 'none' } };
+  }
+  // Audio fades likewise: fade-in stays on the left part, fade-out on the right part.
+  if (clip.audio && (clip.audio.fadeIn || clip.audio.fadeOut)) {
+    left.audio = { ...clip.audio, fadeOut: 0 };
+    right.audio = { ...clip.audio, fadeIn: 0 };
   }
   return [left, right];
 }

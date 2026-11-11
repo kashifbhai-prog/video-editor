@@ -28,8 +28,10 @@ export async function renderAudioMix(
   duration: number,
   signal: AbortSignal,
   onProgress: (fraction: number) => void,
+  /** Lower rates are used by the AI analysis (16 kHz for speech recognition). */
+  sampleRate = EXPORT_SAMPLE_RATE,
 ): Promise<AudioMixResult> {
-  const sr = EXPORT_SAMPLE_RATE;
+  const sr = sampleRate;
   const ctx = new OfflineAudioContext(2, Math.max(1, Math.ceil(duration * sr)), sr);
   const gateOk = await ensureAudioWorklet(ctx);
   const buses = new Map<string, GainNode>();

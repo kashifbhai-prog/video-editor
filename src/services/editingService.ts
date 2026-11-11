@@ -3,7 +3,7 @@ import { useMediaStore } from '../store/mediaStore';
 import { useUiStore } from '../store/uiStore';
 import { usePlaybackStore } from '../store/playbackStore';
 import { previewEngine } from '../engine/previewEngine';
-import { clipEnd, clipsOnTrack, newTrackTypeFor, quantizeToFrame, trackAccepts } from '../engine/timelineModel';
+import { clipEnd, clipsOnTrack, newTrackTypeFor, quantizeToFrame, trackAccepts, trimLeft, trimRight } from '../engine/timelineModel';
 import type { Clip, MediaItem } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -136,6 +136,48 @@ export function splitSelectedAtPlayhead() {
   const created = project().splitClips(ids, t, isStill);
   if (!created.length) notify('Move the playhead inside the selected clip to split it.', 'info');
   else selectClips(created);
+}
+
+/** Ctrl+X: copy the selected clips, then remove them. */
+export function cutSelection() {
+  const ids = getSelectedClipIds();
+  if (!ids.length) return;
+  copySelection();
+  const removed = project().deleteClips(ids);
+  if (removed < ids.length) notify('Clips on locked tracks were copied but not removed.', 'warning');
+  ui().setSelection({ kind: 'none' });
+}
+
+/** Selected clips that the playhead is strictly inside (where split / trim-to-playhead apply). */
+export function selectedClipsUnderPlayhead(): Clip[] {
+  const doc = project().document;
+  const t = quantizeToFrame(usePlaybackStore.getState().timelineTime, doc.canvas.frameRate);
+  return getSelectedClipIds()
+    .map((id) => doc.clips[id])
+    .filter((c) => t > c.start + 1e-6 && t < clipEnd(c) - 1e-6);
+}
+
+/**
+ * Q / W: trims the selected clips' start (or end) to the playhead, with the
+ * same rules as dragging the trim handles (neighbours, source limits, minimum length).
+ */
+export function trimSelectedToPlayhead(side: 'start' | 'end') {
+  const clips = selectedClipsUnderPlayhead();
+  if (!clips.length) {
+    notify('Move the playhead inside the selected clip to trim it.', 'info');
+    return;
+  }
+  const doc = project().document;
+  const t = quantizeToFrame(usePlaybackStore.getState().timelineTime, doc.canvas.frameRate);
+  const media = useMediaStore.getState().items;
+  project().transaction(() => {
+    for (const c of clips) {
+      if (doc.tracks.find((tr) => tr.id === c.trackId)?.locked) continue;
+      const m = media.find((x) => x.id === c.mediaId);
+      const neighbours = clipsOnTrack(project().document, c.trackId);
+      project().setClipTiming(c.id, side === 'start' ? trimLeft(c, t, m, neighbours) : trimRight(c, t, m, neighbours));
+    }
+  });
 }
 
 /** Delete key: selected clips, otherwise the selected track. */

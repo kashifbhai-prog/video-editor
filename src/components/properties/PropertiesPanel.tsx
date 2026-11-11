@@ -179,6 +179,11 @@ export function PropertiesPanel() {
   const selKey =
     selection.kind === 'none' ? 'none' : selection.kind === 'clips' ? `clips:${selection.ids.join(',')}` : `${selection.kind}:${selection.id}`;
   useEffect(() => setTab(selKey === 'none' ? 'project' : 'context'), [selKey]);
+  // "Show Properties" (context menu): always land on the selected item.
+  const focus = useUiStore((s) => s.propertiesFocus);
+  useEffect(() => {
+    if (focus) setTab('context');
+  }, [focus]);
 
   const activeTab = contextual ? tab : 'project';
 
