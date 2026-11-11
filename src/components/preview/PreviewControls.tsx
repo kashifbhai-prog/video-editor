@@ -54,7 +54,7 @@ function VolumeControl() {
         step={0.01}
         value={effective}
         onChange={(e) => previewEngine.setVolume(Number(e.target.value))}
-        className="range w-16"
+        className="range hidden w-16 @[480px]:block"
         style={{ ['--fill' as string]: `${effective * 100}%` }}
       />
     </div>
@@ -78,16 +78,18 @@ export function PreviewControls() {
   const setQuality = useUiStore((s) => s.setPreviewQuality);
 
   return (
-    <div className="shrink-0 border-t border-line bg-panel px-3 pb-1.5 pt-2">
+    // Container queries: the controls adapt to the player's own width (it shares the row with
+    // the side panels). Narrow: two rows (time + tools, then transport); wide: one row.
+    <div className="@container shrink-0 border-t border-line bg-panel px-3 pb-1.5 pt-2">
       <Scrubber />
-      <div className="mt-1.5 grid grid-cols-[1fr_auto_1fr] items-center gap-2">
+      <div className="mt-1.5 grid grid-cols-[auto_1fr] items-center gap-x-2 gap-y-1 @[640px]:grid-cols-[1fr_auto_1fr]">
         <div className="flex items-center gap-1 font-mono text-[11px] tabular-nums">
           <CurrentTime fps={fps} />
           <span className="text-fg-subtle">/</span>
           <span className="text-fg-muted">{formatTimecode(duration, fps)}</span>
         </div>
 
-        <div className="flex items-center gap-0.5">
+        <div className="order-last col-span-2 flex items-center justify-center gap-0.5 @[640px]:order-none @[640px]:col-span-1">
           <IconButton icon={SkipBack} label="Go to start" shortcut="Home" tooltipSide="top" disabled={!playable} onClick={() => previewEngine.seek(0)} />
           <IconButton icon={StepBack} label="Previous frame" shortcut="←" tooltipSide="top" disabled={!playable} onClick={() => previewEngine.step(-1, fps)} />
           <Tooltip label={isPlaying ? 'Pause' : 'Play'} shortcut="Space" side="top">

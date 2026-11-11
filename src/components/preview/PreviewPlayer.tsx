@@ -129,7 +129,7 @@ export function PreviewPlayer() {
   const emptyTimeline = mode === 'timeline' && !hasClips;
 
   return (
-    <section id={PREVIEW_STAGE_ID} aria-label="Preview" className="flex h-full min-w-0 flex-1 flex-col bg-app">
+    <section id={PREVIEW_STAGE_ID} aria-label="Preview" className="flex h-full min-w-0 flex-1 basis-0 flex-col bg-app">
       <div className="flex h-9 shrink-0 items-center justify-between gap-2 border-b border-line bg-panel px-3">
         <h2 className="text-[12px] font-semibold">Player</h2>
         <ModeTabs />

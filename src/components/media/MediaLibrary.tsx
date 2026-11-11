@@ -155,7 +155,7 @@ export function MediaLibrary({ lockedKind, title = 'Media', accept, emptyHint }:
             {visible.length === 0 ? (
               <p className="py-8 text-center text-[11px] text-fg-subtle">No media matches your search.</p>
             ) : (
-              <div className={cn('mt-2.5', viewMode === 'grid' ? 'grid grid-cols-[repeat(auto-fill,minmax(112px,1fr))] gap-x-2 gap-y-2.5' : 'flex flex-col gap-0.5')}>
+              <div className={cn('mt-2.5', viewMode === 'grid' ? 'grid grid-cols-[repeat(auto-fill,108px)] gap-x-2 gap-y-2.5' : 'flex flex-col gap-0.5')}>
                 {visible.map((item) => (
                   <MediaItemView
                     key={item.id}
