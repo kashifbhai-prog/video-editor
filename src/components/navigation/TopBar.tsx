@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useExportStore } from '../../services/exportService';
-import { CircleHelp, Download, PanelRight, Redo2, Save, Settings, Undo2 } from 'lucide-react';
+import { CircleHelp, Download, MessageSquareText, PanelRight, Redo2, Save, Settings, Undo2 } from 'lucide-react';
 import { selectCanRedo, selectCanUndo, useProjectStore } from '../../store/projectStore';
 import { useUiStore } from '../../store/uiStore';
 import { useMediaStore } from '../../store/mediaStore';
@@ -80,6 +80,16 @@ export function TopBar() {
         <div className="mr-2 hidden lg:block">
           <SaveStatus />
         </div>
+        <Tooltip label="Report an issue or send a suggestion">
+          <button
+            type="button"
+            onClick={() => openDialog('feedback')}
+            className="mr-1 inline-flex h-7 items-center gap-1.5 rounded-md bg-success px-2.5 text-[12px] font-semibold text-white transition-[filter] hover:brightness-110"
+          >
+            <MessageSquareText size={14} strokeWidth={2} />
+            <span className="hidden sm:inline">Feedback</span>
+          </button>
+        </Tooltip>
         <IconButton icon={Save} label="Save project" shortcut="Ctrl+S" onClick={() => void saveProject()} />
         <IconButton icon={CircleHelp} label="Help Center (opens in a new tab)" onClick={() => window.open('/help/', '_blank', 'noopener')} />
         <IconButton icon={Settings} label="Settings" onClick={() => openDialog('settings')} />

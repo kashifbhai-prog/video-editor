@@ -8,6 +8,7 @@ import { Timeline } from '../timeline/Timeline';
 import { TimelineResizeHandle } from './ResizeHandle';
 import { Toaster } from '../controls/Toaster';
 import { SettingsDialog } from './SettingsDialog';
+import { FeedbackDialog } from './FeedbackDialog';
 import { ExportDialog } from './ExportDialog';
 
 export function EditorLayout() {
@@ -32,6 +33,7 @@ export function EditorLayout() {
 
       {dialog === 'settings' && <SettingsDialog />}
       {dialog === 'export' && <ExportDialog />}
+      {dialog === 'feedback' && <FeedbackDialog />}
       <Toaster />
     </div>
   );
