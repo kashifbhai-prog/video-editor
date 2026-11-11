@@ -9,6 +9,7 @@ import type { Clip, ProjectDocument, TextStyle, Track } from '../../types';
 import { runAiJob, throwIfAborted, type JobControl } from './aiJobs';
 import { transcribeAudio, type TranscriptSegment } from './aiWorkerClient';
 import { renderTimelineAudio } from './timelineAudio';
+import { track } from '../analytics';
 import { useAiResults, type TranscriptCue } from './aiStore';
 
 // ---------------------------------------------------------------------------
@@ -350,6 +351,7 @@ export async function generateCaptions(opts: CaptionOptions): Promise<number | n
     const placed = placeCaptions(cues, opts.replace);
     useAiResults.setState({ transcript: { doc: project().document, cues: segments, language } });
     notify(`${placed} captions added (${model} model on the ${device === 'webgpu' ? 'GPU' : 'CPU'}). Edit them in the Captions panel.`, 'success');
+    track('ai_captions', { model, language, device, captions: placed });
     return placed;
   });
 }

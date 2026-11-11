@@ -5,6 +5,7 @@ import { DEFAULT_MATTE, MATTE_MODEL_MB, matteEngine, type MatteModel } from '../
 import { clipDuration, clipsOnTrack, isRangeFree } from '../../engine/timelineModel';
 import { selectClips } from '../editingService';
 import type { ClipMatte } from '../../types';
+import { track } from '../analytics';
 import { isRunning, runAiJob } from './aiJobs';
 
 // ---------------------------------------------------------------------------
@@ -35,6 +36,7 @@ export function setBackgroundRemoval(clipId: string, patch: Partial<ClipMatte>, 
   const next = { ...DEFAULT_MATTE, ...clip.matte, ...patch };
   project().updateClip(clipId, { matte: next }, coalesceKey);
   if (next.enabled) void loadMatteModel(next.model);
+  if (patch.enabled && !clip.matte?.enabled) track('ai_background_removal', { mode: next.mode, model: next.model });
 }
 
 export function disableBackgroundRemoval(clipId: string) {

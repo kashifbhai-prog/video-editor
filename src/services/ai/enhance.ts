@@ -11,6 +11,7 @@ import { importAudioBuffer, placeAudioForVideoClip } from '../audioEditing';
 import { selectClips } from '../editingService';
 import type { Clip, ClipAudio, MediaItem } from '../../types';
 import { runAiJob, throwIfAborted, type JobControl } from './aiJobs';
+import { track } from '../analytics';
 import { denoiseAudio, limitAudio } from './aiWorkerClient';
 
 // ---------------------------------------------------------------------------
@@ -170,6 +171,7 @@ export async function enhanceClip(clipId: string, opts: EnhanceOptions): Promise
   if (r) {
     selectClips([r]);
     notify('Audio enhanced (the original file is kept in the library). Undo with Ctrl+Z.', 'success');
+    track('ai_audio_enhanced', { denoise: opts.denoise, voice: opts.voice, normalize: opts.normalize });
   }
   return !!r;
 }

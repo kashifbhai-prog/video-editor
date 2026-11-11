@@ -30,8 +30,10 @@ export const SHORTCUTS: ShortcutInfo[] = [
   { keys: 'Shift + ← / →', action: 'Back / forward 1 second' },
   { keys: 'Home / End', action: 'Jump to start / end' },
   { keys: 'S', action: 'Split selected clip at playhead' },
+  { keys: 'Q / W', action: 'Trim selected clip start / end to playhead' },
   { keys: 'Delete / Backspace', action: 'Delete selected clips (or track)' },
   { keys: 'Ctrl + C / Ctrl + V', action: 'Copy / paste clips at playhead' },
+  { keys: 'Ctrl + X', action: 'Cut selected clips' },
   { keys: 'Ctrl + D', action: 'Duplicate selected clips' },
   { keys: 'Ctrl + A', action: 'Select all clips' },
   { keys: 'Ctrl + Click', action: 'Add / remove clip from selection' },
@@ -48,6 +50,7 @@ export const SHORTCUTS: ShortcutInfo[] = [
   { keys: 'Shift + rotate handle', action: 'Rotate in 15° steps' },
   { keys: 'Double-click text (player)', action: 'Edit text in place (Ctrl + Enter to finish)' },
   { keys: 'Delete (transition selected)', action: 'Remove the transition' },
+  { keys: 'Right-click a clip', action: 'Clip menu (actions and details)' },
 ];
 
 function isTypingTarget(target: EventTarget | null): boolean {

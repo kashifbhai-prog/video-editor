@@ -1,20 +1,217 @@
 <!doctype html>
-<html lang="en">
-  <head>
-    <meta charset="UTF-8" />
-    <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Reelforge Studio</title>
-    <!-- Text clip fonts (Latin, Arabic, Urdu). Offline, text falls back to system fonts. -->
-    <link rel="preconnect" href="https://fonts.googleapis.com" />
-    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
-    <link
-      rel="stylesheet"
-      href="https://fonts.googleapis.com/css2?family=Inter:wght@300..900&family=Noto+Naskh+Arabic:wght@400..700&family=Noto+Nastaliq+Urdu:wght@400..700&display=swap"
-    />
-  </head>
-  <body>
-    <div id="root"></div>
-    <script type="module" src="/src/main.tsx"></script>
-  </body>
+<html lang="en" data-layout="site" data-nav="home" data-title="Vyora – free online video editor with AI captions" data-description="Edit videos in your browser for free: multi-track timeline, text, transitions, effects, AI auto captions in English and Urdu, silence removal, background removal and HD/4K export. No upload, no watermark.">
+<body>
+
+<section class="hero">
+  <div class="container">
+    <span class="eyebrow"><span class="dot"></span> Free · Runs in your browser · No sign-up</span>
+    <h1>Edit videos like a pro – <span class="grad">right in your browser</span></h1>
+    <p class="lead">Vyora is a complete video editor with a multi-track timeline, titles, transitions, colour tools and built-in AI for captions, silence removal and background removal. Your files never leave your computer.</p>
+    <div class="hero-cta">
+      <a href="/editor/" class="btn btn-primary">Start editing – it's free
+        <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M5 12h14M13 6l6 6-6 6"/></svg></a>
+      <a href="/help/getting-started/" class="btn btn-secondary">See how it works</a>
+    </div>
+    <p class="hero-note">No account · No watermark · Export MP4 up to 4K</p>
+    <div class="hero-shot window">
+      <div class="window-bar"><i></i><i></i><i></i><span>vyora · Golden hour vlog</span></div>
+      <img src="/img/editor-hero.webp" width="2000" height="1125" alt="The Vyora editor: media library, player with a title and captions, clip properties and a multi-track timeline" fetchpriority="high" />
+    </div>
+    <div class="trust">
+      <div><strong>Private by design</strong><span>Editing, AI and export run on your device.</span></div>
+      <div><strong>No watermark</strong><span>Your video, exactly as you made it.</span></div>
+      <div><strong>Up to 4K export</strong><span>MP4 with H.264 or HEVC, hardware accelerated.</span></div>
+      <div><strong>AI included, free</strong><span>No API keys, no credits, no limits.</span></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" id="features">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Everything you need</span>
+      <h2>A real editor, not a toy</h2>
+      <p>The tools you expect from desktop software – in a tab that opens in a second.</p>
+    </div>
+    <div class="grid grid-3">
+      <div class="card">
+        <span class="icon i-video"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="3" y="4" width="18" height="16" rx="2"/><path d="M3 9h18M3 15h18M8 4v16M16 4v16"/></svg></span>
+        <h3>Multi-track timeline</h3>
+        <p>Video, overlay, text and audio tracks. Drag, snap, trim, split and rearrange with frame accuracy.</p>
+      </div>
+      <div class="card">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="6" cy="6" r="3"/><circle cx="6" cy="18" r="3"/><path d="M20 4 8.1 15.9M14.5 14.5 20 20M8.1 8.1 12 12"/></svg></span>
+        <h3>Fast, precise cuts</h3>
+        <p>Split at the playhead, trim to the playhead, ripple edits, copy and paste, unlimited undo – and a right-click menu for everything.</p>
+      </div>
+      <div class="card">
+        <span class="icon i-text"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 7V4h16v3M9 20h6M12 4v16"/></svg></span>
+        <h3>Titles in any language</h3>
+        <p>Styled text with outline, shadow and boxes. Urdu and Arabic are laid out right-to-left automatically.</p>
+      </div>
+      <div class="card">
+        <span class="icon i-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l1.9 5.8H20l-4.9 3.6 1.9 5.8L12 14.6 7 18.2l1.9-5.8L4 8.8h6.1z"/></svg></span>
+        <h3>Transitions &amp; effects</h3>
+        <p>12 transitions and 12 GPU effects – glow, blur, glitch, film grain, vignette and more.</p>
+      </div>
+      <div class="card">
+        <span class="icon i-pink"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="9"/><path d="M12 3a9 9 0 0 0 0 18z" fill="currentColor" fill-opacity=".3"/></svg></span>
+        <h3>Colour &amp; filters</h3>
+        <p>Brightness, contrast, temperature, highlights, shadows and 11 cinematic filter looks.</p>
+      </div>
+      <div class="card">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 2l3 7-3 13-3-13z"/><path d="M3 12h18"/></svg></span>
+        <h3>Keyframe animation</h3>
+        <p>Animate position, scale, rotation, opacity and volume with easing – or use one-click in/out animations.</p>
+      </div>
+      <div class="card">
+        <span class="icon i-audio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 10v4M8 6v12M12 3v18M16 8v8M20 11v2"/></svg></span>
+        <h3>Audio mixing</h3>
+        <p>Volume, gain, fades, 5-band EQ, balance, noise reduction, normalise and extract audio from video.</p>
+      </div>
+      <div class="card">
+        <span class="icon i-audio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><rect x="9" y="2" width="6" height="12" rx="3"/><path d="M5 10a7 7 0 0 0 14 0M12 17v4M8 21h8"/></svg></span>
+        <h3>Voice-over recording</h3>
+        <p>Record narration straight onto the timeline while the video plays.</p>
+      </div>
+      <div class="card">
+        <span class="icon i-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3v12M7 10l5 5 5-5M5 21h14"/></svg></span>
+        <h3>Export up to 4K</h3>
+        <p>MP4 from 480p to 4K at 24–60 fps, verified after rendering. Presets for drafts, standard and high quality.</p>
+      </div>
+    </div>
+    <div class="ad-slot" data-ad="home-features"></div>
+  </div>
+</section>
+
+<section class="section section-alt" id="ai">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">Built-in AI · free</span>
+      <h2>Let AI do the boring parts</h2>
+      <p>Powerful AI that runs on your own computer. No uploads, no API keys, no credits to buy.</p>
+    </div>
+
+    <div class="split">
+      <div>
+        <span class="kicker">Auto captions</span>
+        <h3>Accurate subtitles in a minute</h3>
+        <p>Speech recognition turns what is said into captions that appear exactly with the voice – in English, Urdu, Hindi, Arabic and more.</p>
+        <ul class="checks">
+          <li>Word-level timing, two balanced lines per caption</li>
+          <li>Edit text and timing, style every caption at once</li>
+          <li>Import and export SRT subtitle files</li>
+          <li>Burned into your exported video</li>
+        </ul>
+      </div>
+      <div class="window"><img src="/img/captions.webp" width="2000" height="1125" alt="The captions panel with generated, editable captions and a styled caption on the video" loading="lazy" /></div>
+    </div>
+
+    <div class="split reverse">
+      <div>
+        <span class="kicker">Silence removal</span>
+        <h3>Cut every pause in one click</h3>
+        <p>Vyora finds the pauses in your recording and shows them on the timeline. Keep the ones you like, remove the rest – picture, music and captions stay in sync.</p>
+        <ul class="checks">
+          <li>Adjustable level, shortest pause and breathing room</li>
+          <li>Review every pause before anything is cut</li>
+          <li>One undo step if you change your mind</li>
+        </ul>
+      </div>
+      <div class="window"><img src="/img/ai-silence.webp" width="2000" height="1125" alt="Detected pauses shown as red bands across the timeline, with the silence removal panel" loading="lazy" /></div>
+    </div>
+
+    <div class="grid grid-3" style="margin-top:96px">
+      <div class="card">
+        <span class="icon i-audio"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M2 12h3l3-8 4 16 3-8h7"/></svg></span>
+        <h3>Voice enhancement</h3>
+        <p>Neural noise removal, clearer speech and loudness normalisation. Listen to before and after first.</p>
+      </div>
+      <div class="card">
+        <span class="icon i-violet"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/><path d="M4 21c1.5-4 4.5-6 8-6s6.5 2 8 6"/><path d="M2 2l20 20" opacity=".5"/></svg></span>
+        <h3>Background removal</h3>
+        <p>Remove the background behind a person – replace it with a colour, a blur, or any image or video.</p>
+      </div>
+      <div class="card">
+        <span class="icon"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M4 4h16v16H4zM9 4v16M4 9h5M4 15h5"/><path d="m14 10 4 2-4 2z"/></svg></span>
+        <h3>Smart cuts &amp; highlights</h3>
+        <p>Find scene changes, repeated takes and dead footage, get a summary and build a highlight reel automatically.</p>
+      </div>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">How it works</span>
+      <h2>From raw clips to a finished video</h2>
+    </div>
+    <div class="grid grid-3 steps">
+      <div class="step"><h3>Import</h3><p>Open the editor and drop in your videos, photos and music – MP4, MOV, WebM, JPG, PNG, MP3, WAV and more.</p></div>
+      <div class="step"><h3>Edit</h3><p>Arrange clips on the timeline, add titles, transitions and effects, and let AI add captions or cut the pauses.</p></div>
+      <div class="step"><h3>Export</h3><p>Choose a preset or your own settings and download an MP4 – up to 4K, with no watermark.</p></div>
+    </div>
+  </div>
+</section>
+
+<section class="section" style="padding-top:0">
+  <div class="container">
+    <div class="privacy-band">
+      <span class="icon i-green"><svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round"><path d="M12 3l8 3v6c0 5-3.5 8-8 9-4.5-1-8-4-8-9V6z"/><path d="m9 12 2 2 4-4"/></svg></span>
+      <div>
+        <h2>Your videos stay on your computer</h2>
+        <p>Vyora is not a cloud service. Editing, AI processing and export all happen inside your browser – nothing you edit is ever uploaded to us.</p>
+      </div>
+      <a href="/privacy/" class="btn btn-secondary">Privacy details</a>
+    </div>
+  </div>
+</section>
+
+<section class="section section-alt">
+  <div class="container">
+    <div class="section-head">
+      <span class="kicker">FAQ</span>
+      <h2>Questions, answered</h2>
+    </div>
+    <div class="faq">
+      <details>
+        <summary>Is Vyora really free?</summary>
+        <p>Yes. The editor, the AI tools and exporting are free, with no watermark and no account. The website is supported by advertising.</p>
+      </details>
+      <details>
+        <summary>Do I need to install anything?</summary>
+        <p>No. Vyora runs in a modern browser. We recommend the latest Google Chrome or Microsoft Edge on a computer.</p>
+      </details>
+      <details>
+        <summary>Are my videos uploaded anywhere?</summary>
+        <p>No. Your media is processed on your own device. The AI tools download their models once (from public model libraries) and then work offline.</p>
+      </details>
+      <details>
+        <summary>Can it make captions in Urdu?</summary>
+        <p>Yes – choose Urdu as the language in the Captions panel. For the best Urdu results pick the larger "Small" speech model. You can correct any word afterwards.</p>
+      </details>
+      <details>
+        <summary>What can I export?</summary>
+        <p>MP4 video with H.264 (or HEVC where your browser supports it) and AAC audio, from 480p up to 4K, at 24 to 60 frames per second.</p>
+      </details>
+      <details>
+        <summary>Where is my project saved?</summary>
+        <p>In your browser's storage on this computer. Save with Ctrl+S or turn on autosave. Clearing your browser data removes saved projects, so export your finished videos.</p>
+      </details>
+    </div>
+  </div>
+</section>
+
+<section class="section">
+  <div class="container">
+    <div class="cta-band">
+      <h2>Ready to make something great?</h2>
+      <p>Open the editor and start your first project – it takes seconds.</p>
+      <a href="/editor/" class="btn btn-primary">Open the editor</a>
+    </div>
+  </div>
+</section>
+
+</body>
 </html>

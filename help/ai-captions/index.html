@@ -1,0 +1,55 @@
+<!doctype html>
+<html lang="en" data-layout="site" data-nav="help" data-help="ai-captions" data-title="Auto captions and subtitles (English, Urdu and more)" data-description="Generate captions from speech automatically in Vyora, in English, Urdu, Hindi, Arabic or Punjabi. Edit the text and timing, style all captions, shift sync and import or export SRT subtitle files.">
+<body>
+<article class="prose">
+<span class="kicker">AI tools</span>
+<h1>Auto captions and subtitles</h1>
+<p class="intro">Vyora listens to the speech in your video and writes captions that appear exactly with the voice. Captions are ordinary text you can correct and style – and they are burned into your exported video.</p>
+<div class="toc" data-toc></div>
+
+<h2>Generate captions</h2>
+<ol>
+  <li>Put your clips on the timeline and open the <strong>Captions</strong> panel.</li>
+  <li>Choose the <strong>Audio</strong> to listen to: the whole timeline, or only the selected clip(s) (useful when music plays on another track).</li>
+  <li>Choose the <strong>Language</strong>: Detect automatically, English, Urdu, Hindi, Arabic or Punjabi.</li>
+  <li>Choose the <strong>Model</strong> (see below) and click <strong>Generate captions</strong>.</li>
+</ol>
+<p>A progress bar shows the download (first time only) and the transcription, with an estimate of the time left. You can keep editing meanwhile, or click <strong>Cancel</strong>. When done, the captions appear on a <strong>Captions</strong> text track.</p>
+<figure><img src="/img/captions.webp" width="2000" height="1125" alt="The captions panel listing each caption with its start and end time, and a styled caption on the video" loading="lazy" /><figcaption>Generated captions – each one can be edited.</figcaption></figure>
+
+<h2>Choosing a model</h2>
+<table>
+  <tr><th>Model</th><th>Download (once)</th><th>Best for</th></tr>
+  <tr><td>Tiny – fastest</td><td>≈ 41 MB</td><td>Quick drafts; least accurate.</td></tr>
+  <tr><td>Base – balanced</td><td>≈ 77 MB</td><td>Good English (the default).</td></tr>
+  <tr><td>Small – most accurate</td><td>≈ 249 MB</td><td>Urdu and other languages; slower and needs more memory.</td></tr>
+</table>
+<p>The model runs on your computer – your audio is never uploaded. Tick <em>Use the graphics card when available</em> for faster transcription of long videos (the download is larger).</p>
+<div class="callout tip"><strong>Tips for Urdu</strong><p>Select <em>Urdu</em> as the language instead of "Detect automatically" (which can mistake Urdu for Hindi), use the <em>Small</em> model, and check the result – the speech model makes more mistakes in Urdu than in English. Captions in Urdu use the Noto Nastaliq Urdu font automatically.</p></div>
+
+<h2>Editing captions</h2>
+<p>The <strong>Edit captions</strong> list shows every caption; the one under the playhead is highlighted. For each caption you can:</p>
+<ul>
+  <li>Click its time to jump there.</li>
+  <li>Change the <strong>start</strong> and <strong>end</strong> times (captions on the same track never overlap).</li>
+  <li>Correct the text – press <kbd>Enter</kbd> for a new line.</li>
+  <li>Delete it with the bin icon.</li>
+</ul>
+<p><strong>Add</strong> creates a new caption at the playhead. Because captions are text clips, you can also move and trim them on the timeline like any clip.</p>
+
+<h2>Styling all captions</h2>
+<p>The <strong>Style</strong> section changes every caption at once: font, size, text colour, background box (with transparency), outline, and position (top, middle, bottom or any height). <em>Show captions</em> hides or shows the caption track in the preview and the export.</p>
+<p>If all captions are slightly early or late, use <strong>Sync −0.1 s / +0.1 s</strong> to shift them together.</p>
+
+<h2>SRT subtitle files</h2>
+<ul>
+  <li><strong>SRT</strong> (download) saves the captions as an .srt file for YouTube, Facebook or a video player.</li>
+  <li><strong>Import</strong> loads an .srt file as captions on the timeline.</li>
+</ul>
+
+<h2>How good are the captions?</h2>
+<p>For clear English speech the captions are usually word-perfect and appear within a fraction of a second of the voice. Background music, several people talking at once, strong accents and less common languages reduce the accuracy – so always read through the captions before you publish.</p>
+<div class="ad-slot" data-ad="help-article"></div>
+</article>
+</body>
+</html>

@@ -1,0 +1,72 @@
+<!doctype html>
+<html lang="en" data-layout="site" data-nav="help" data-help="timeline-editing" data-title="Editing on the timeline" data-description="How to move, trim, split, copy, duplicate and delete clips in Vyora, use snapping and zoom, undo changes and the right-click clip menu.">
+<body>
+<article class="prose">
+<span class="kicker">Editing</span>
+<h1>Editing on the timeline</h1>
+<p class="intro">The timeline at the bottom of the editor is where your video is built: clips laid out on tracks, from left (start) to right (end). Here is everything you can do with them.</p>
+<div class="toc" data-toc></div>
+
+<h2>The playhead and the ruler</h2>
+<p>The blue line is the <strong>playhead</strong> – the moment shown in the player. Click or drag in the ruler (or on an empty part of a track) to move it. The time at the top of the timeline shows its exact position in hours:minutes:seconds:frames.</p>
+
+<h2>Selecting clips</h2>
+<ul>
+  <li><strong>Click</strong> a clip to select it. Its settings appear in the properties panel.</li>
+  <li><kbd>Ctrl</kbd> + click (or <kbd>Shift</kbd> + click) adds or removes clips from the selection.</li>
+  <li><kbd>Ctrl</kbd> + <kbd>A</kbd> selects every clip; <kbd>Esc</kbd> clears the selection.</li>
+</ul>
+
+<h2>Moving clips</h2>
+<p>Drag a clip left or right to change when it plays, or up and down to move it to another track of the same kind (video and overlay tracks accept pictures, audio tracks accept sound). Several selected clips move together. Clips never overlap on a track – a clip dropped where there is no room is placed in the nearest free spot.</p>
+<p>With <strong>snapping</strong> on (magnet button in the timeline toolbar), clips stick to the playhead and to the edges of other clips, shown by a yellow guide line.</p>
+
+<h2>Trimming</h2>
+<p>Move the mouse to the left or right edge of a clip until the cursor shows ↔, then drag:</p>
+<ul>
+  <li><strong>Left edge:</strong> changes where the clip starts (cuts off or brings back the beginning).</li>
+  <li><strong>Right edge:</strong> changes where it ends.</li>
+</ul>
+<p>Trimming never goes past the start or end of the original file, never overlaps the neighbouring clip and keeps every clip at least 0.1 seconds long. Images and text can be stretched to any length.</p>
+<p>Faster: put the playhead where you want the cut and press <kbd>Q</kbd> to trim the clip's <em>start</em> to it, or <kbd>W</kbd> to trim its <em>end</em> to it.</p>
+
+<h2>Splitting</h2>
+<p>Place the playhead inside a clip, select it and press <kbd>S</kbd> (or the scissors button). The clip becomes two independent clips at that frame. Keyframes, entrance / exit animations and audio fades are split sensibly: the first part keeps the entrance, the second the exit.</p>
+
+<h2>Copy, cut, paste, duplicate and delete</h2>
+<table>
+  <tr><th>Action</th><th>Shortcut</th><th>What happens</th></tr>
+  <tr><td>Copy</td><td><kbd>Ctrl</kbd> + <kbd>C</kbd></td><td>Copies the selected clips.</td></tr>
+  <tr><td>Cut</td><td><kbd>Ctrl</kbd> + <kbd>X</kbd></td><td>Copies them and removes them from the timeline.</td></tr>
+  <tr><td>Paste</td><td><kbd>Ctrl</kbd> + <kbd>V</kbd></td><td>Pastes at the playhead, on the clips' original tracks, keeping their spacing.</td></tr>
+  <tr><td>Duplicate</td><td><kbd>Ctrl</kbd> + <kbd>D</kbd></td><td>Places a copy right after each selected clip.</td></tr>
+  <tr><td>Delete</td><td><kbd>Delete</kbd> / <kbd>Backspace</kbd></td><td>Removes the selected clips.</td></tr>
+</table>
+
+<h2>The right-click menu</h2>
+<p>Right-click any clip for a menu with everything that applies to it. The clip is selected first; if it is already part of a multi-selection, the whole selection is kept.</p>
+<figure><img src="/img/context-menu.webp" width="2000" height="1125" alt="The right-click menu of a video clip with Cut, Copy, Paste, Duplicate, Delete, Split, Trim, Extract audio, Speed, Arrange, Rename, Lock, Mute and more" loading="lazy" /><figcaption>The clip menu of a video clip.</figcaption></figure>
+<ul>
+  <li><strong>Cut, Copy, Paste at playhead, Duplicate, Delete</strong> – as above.</li>
+  <li><strong>Split at playhead, Trim start / end to playhead</strong> – available when the playhead is inside the clip.</li>
+  <li><strong>Extract audio</strong> (video clips) – puts the video's sound on its own audio clip.</li>
+  <li><strong>Speed</strong> submenu – 0.25× to 4×.</li>
+  <li><strong>Arrange</strong> submenu – bring an image or video forward or send it backward among the layers.</li>
+  <li><strong>Rename…</strong>, <strong>Lock / Unlock track</strong>, <strong>Mute / Unmute track</strong>.</li>
+  <li><strong>Show properties</strong> and <strong>Select all</strong>.</li>
+</ul>
+<p>For audio, image and text clips the menu also shows their key details (duration, start, volume, size, font and so on). Unavailable actions are greyed out – hover them to see why. Use the arrow keys and <kbd>Enter</kbd> to choose with the keyboard, and <kbd>Esc</kbd> to close.</p>
+
+<h2>Zooming and scrolling</h2>
+<ul>
+  <li>Zoom with the slider at the right of the timeline toolbar, the <kbd>=</kbd> / <kbd>-</kbd> keys, or <kbd>Ctrl</kbd> + mouse wheel over the timeline.</li>
+  <li><strong>Zoom to fit</strong> shows the whole edit.</li>
+  <li>Scroll sideways with the scrollbar or <kbd>Shift</kbd> + mouse wheel.</li>
+</ul>
+
+<h2>Undo and redo</h2>
+<p><kbd>Ctrl</kbd> + <kbd>Z</kbd> undoes the last change, <kbd>Ctrl</kbd> + <kbd>Y</kbd> (or <kbd>Ctrl</kbd> + <kbd>Shift</kbd> + <kbd>Z</kbd>) redoes it. Every edit can be undone – including AI edits such as silence removal or inserted highlights, which count as a single step.</p>
+<div class="ad-slot" data-ad="help-article"></div>
+</article>
+</body>
+</html>

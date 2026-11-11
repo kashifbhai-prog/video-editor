@@ -1,0 +1,35 @@
+# Netlify: build the website + editor and serve it with the right headers.
+[build]
+  command = "npm run build"
+  publish = "dist"
+
+[build.environment]
+  NODE_VERSION = "22"
+
+# Set VITE_SITE_URL, VITE_CONTACT_EMAIL, VITE_GA_ID and VITE_ADSENSE_CLIENT in
+# Site settings → Environment variables (see .env.example).
+
+[[redirects]]
+  from = "/editor"
+  to = "/editor/"
+  status = 301
+
+[[headers]]
+  for = "/*"
+  [headers.values]
+    X-Content-Type-Options = "nosniff"
+    Referrer-Policy = "strict-origin-when-cross-origin"
+    X-Frame-Options = "SAMEORIGIN"
+    # The editor records voice-overs (microphone) – nothing else is needed.
+    Permissions-Policy = "camera=(), microphone=(self), geolocation=(), payment=()"
+
+# Hashed build files never change: cache them for a year.
+[[headers]]
+  for = "/assets/*"
+  [headers.values]
+    Cache-Control = "public, max-age=31536000, immutable"
+
+[[headers]]
+  for = "/*.wasm"
+  [headers.values]
+    Content-Type = "application/wasm"

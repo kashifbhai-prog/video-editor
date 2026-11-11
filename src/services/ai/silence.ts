@@ -7,6 +7,7 @@ import { createId } from '../../utils/id';
 import type { Clip } from '../../types';
 import { runAiJob } from './aiJobs';
 import { renderTimelineAudio } from './timelineAudio';
+import { track } from '../analytics';
 import { isFresh, useAiResults, type SilenceRange } from './aiStore';
 
 // ---------------------------------------------------------------------------
@@ -109,5 +110,6 @@ export function removeSelectedSilences(): number {
   const removed = rippleRemove(ranges);
   clearSilence();
   notify(`Removed ${ranges.length} pauses (${removed.toFixed(1)} s). Undo with Ctrl+Z.`, 'success');
+  track('ai_silence_removed', { pauses: ranges.length, seconds: Math.round(removed) });
   return removed;
 }

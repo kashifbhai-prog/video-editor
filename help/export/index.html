@@ -1,0 +1,49 @@
+<!doctype html>
+<html lang="en" data-layout="site" data-nav="help" data-help="export" data-title="Exporting your video (MP4 up to 4K)" data-description="Export MP4 videos from Vyora: Draft, Standard and High quality presets, resolution from 480p to 4K, 24–60 fps, H.264 or HEVC, video and audio bitrate, progress, cancel and download.">
+<body>
+<article class="prose">
+<span class="kicker">Export &amp; projects</span>
+<h1>Exporting your video</h1>
+<p class="intro">Exporting renders your edit into an MP4 file you can upload anywhere. It happens on your computer, uses your graphics card's video encoder when available, and the result is checked before you download it.</p>
+<div class="toc" data-toc></div>
+
+<h2>Start an export</h2>
+<p>Click <strong>Export</strong> at the top right (or press <kbd>Ctrl</kbd> + <kbd>E</kbd>).</p>
+<figure><img src="/img/export.webp" width="2000" height="1125" alt="The export dialog with presets, file name, aspect ratio, resolution, frame rate, codec and bitrate settings and a summary with the estimated file size" loading="lazy" /><figcaption>The export settings, with a live summary and estimated size.</figcaption></figure>
+
+<h2>Presets</h2>
+<table>
+  <tr><th>Preset</th><th>Settings</th><th>Use for</th></tr>
+  <tr><td>Draft</td><td>480p, low bitrate</td><td>A quick, small file to review or share for feedback.</td></tr>
+  <tr><td>Standard</td><td>1080p, balanced bitrate, AAC 160 kbps</td><td>Most uploads (YouTube, Facebook, Instagram).</td></tr>
+  <tr><td>High quality</td><td>1080p, high bitrate, AAC 256 kbps</td><td>Archiving, or when quality matters more than size.</td></tr>
+  <tr><td>Custom</td><td>Your own choices</td><td>Changing any setting switches to Custom.</td></tr>
+</table>
+
+<h2>All settings</h2>
+<table>
+  <tr><th>Setting</th><th>Options</th></tr>
+  <tr><td>File name</td><td>The name of the downloaded .mp4.</td></tr>
+  <tr><td>Aspect ratio</td><td>16:9, 9:16, 1:1, 4:5 (changes the project).</td></tr>
+  <tr><td>Resolution</td><td>480p, 720p HD, 1080p Full HD, 1440p QHD, 2160p 4K. Sizes your computer cannot encode are marked unavailable.</td></tr>
+  <tr><td>Frame rate</td><td>24, 25, 30, 50 or 60 fps.</td></tr>
+  <tr><td>Video codec</td><td>H.264 (plays everywhere) or HEVC / H.265 (smaller files at the same quality, where your browser supports it).</td></tr>
+  <tr><td>Video bitrate</td><td>0.5–80 Mbps. Higher means better quality and bigger files.</td></tr>
+  <tr><td>Audio bitrate</td><td>96–320 kbps AAC audio, 48 kHz stereo.</td></tr>
+</table>
+<p>The summary shows the final size, codecs, duration and an <strong>estimated file size</strong>. Warnings appear if something needs your attention, for example missing media.</p>
+
+<h2>While it renders</h2>
+<p>The progress view shows the stage (preparing, audio, rendering &amp; encoding, finishing, checking), percentage, frame count, elapsed time and time remaining. Click <strong>Hide</strong> to keep working while it runs – the Export button shows the progress – or <strong>Cancel export</strong> to stop. Keep the tab open until it finishes.</p>
+
+<h2>Download</h2>
+<p>When the file is ready and verified, you can play it right in the dialog, see its size, duration, resolution and codecs, and click <strong>Download</strong>. <strong>Export again</strong> returns to the settings.</p>
+
+<h2>What is included</h2>
+<p>The export contains exactly what the player shows: all visible tracks, titles and captions, colour and effects, transitions, keyframe animation, speed changes, background removal and the mixed audio of all unmuted tracks. Hidden tracks are left out, muted tracks are silent and reversed clips are exported without sound.</p>
+<div class="callout tip"><strong>Speed</strong><p>On a typical computer with hardware encoding, 1080p renders several times faster than real time. 4K, many effects and background removal take longer.</p></div>
+<p>The <strong>Project file (.json)</strong> download at the bottom of the settings saves your project's structure (not the media) as a backup.</p>
+<div class="ad-slot" data-ad="help-article"></div>
+</article>
+</body>
+</html>

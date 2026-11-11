@@ -9,6 +9,7 @@ import { createId } from '../../utils/id';
 import type { Clip } from '../../types';
 import { runAiJob, throwIfAborted } from './aiJobs';
 import { isFresh, useAiResults, type Suggestion } from './aiStore';
+import { track } from '../analytics';
 import { isStillClip, rippleRemove } from './silence';
 
 // ---------------------------------------------------------------------------
@@ -159,6 +160,7 @@ export async function analyzeClip(clipId: string): Promise<Suggestion[] | null> 
     useAiResults.setState({ scenes: { doc: project().document, cuts: cuts.map((c) => quantizeToFrame(toTimeline(c), fps)), suggestions: final, clipName: clip.name } });
     if (project().document !== doc) throw new Error('The timeline changed during the analysis. Please run it again.');
     notify(`${cuts.length} scene change${cuts.length === 1 ? '' : 's'} and ${kept.length} suggested cut${kept.length === 1 ? '' : 's'} found.`, 'success');
+    track('ai_smart_cuts', { scenes: cuts.length, suggestions: kept.length });
     return final;
   });
 }

@@ -5,6 +5,7 @@ import { useUiStore } from '../store/uiStore';
 import { usePlaybackStore } from '../store/playbackStore';
 import { previewEngine } from '../engine/previewEngine';
 import { clipsOnTrack, isRangeFree, quantizeToFrame } from '../engine/timelineModel';
+import { track as trackEvent } from './analytics';
 import { selectClips } from './editingService';
 
 // ---------------------------------------------------------------------------
@@ -147,6 +148,7 @@ export async function stopRecording(): Promise<string | null> {
   if (id) {
     selectClips([id]);
     useUiStore.getState().notify(`Recorded ${(item.duration ?? 0).toFixed(1)} s voice-over at ${startTime.toFixed(2)} s.`, 'success');
+    trackEvent('voice_over', { seconds: Math.round(item.duration ?? 0) });
   }
   return id;
 }

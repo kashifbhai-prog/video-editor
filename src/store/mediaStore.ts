@@ -6,6 +6,7 @@ import { probeMedia } from '../utils/mediaProbe';
 import { mediaStorage, type StoredMediaRecord } from '../utils/storage';
 import { useUiStore } from './uiStore';
 import { useProjectStore } from './projectStore';
+import { track } from '../services/analytics';
 import { releaseFilmstrip } from '../services/filmstrip';
 
 // ---------------------------------------------------------------------------
@@ -124,6 +125,7 @@ export const useMediaStore = create<MediaState>()((set, get) => {
       await Promise.all(workers);
 
       if (ok > 0) notify(`Imported ${ok} file${ok === 1 ? '' : 's'}.`, 'success');
+      if (ok > 0) track('media_import', { files: ok });
 
       // Auto-preview the first imported item, but only while the timeline is
       // still empty – never interrupt an edit in progress.

@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useExportStore } from '../../services/exportService';
-import { Download, PanelRight, Redo2, Save, Settings, Undo2 } from 'lucide-react';
+import { CircleHelp, Download, PanelRight, Redo2, Save, Settings, Undo2 } from 'lucide-react';
 import { selectCanRedo, selectCanUndo, useProjectStore } from '../../store/projectStore';
 import { useUiStore } from '../../store/uiStore';
 import { useMediaStore } from '../../store/mediaStore';
@@ -15,9 +15,10 @@ import logoUrl from '../../assets/logo.jpg';
 function BrandMark() {
   // The logo is drawn on black: "screen" blending makes the black blend into the top bar.
   return (
-    <div className="flex items-center pr-2">
+    // Links to the website's home page (the browser asks first if there are unsaved changes).
+    <a href="/" title="Vyora home" aria-label="Vyora home" className="flex items-center rounded pr-2">
       <img src={logoUrl} alt="Vyora" draggable={false} className="h-6 w-auto select-none mix-blend-screen" />
-    </div>
+    </a>
   );
 }
 
@@ -80,6 +81,7 @@ export function TopBar() {
           <SaveStatus />
         </div>
         <IconButton icon={Save} label="Save project" shortcut="Ctrl+S" onClick={() => void saveProject()} />
+        <IconButton icon={CircleHelp} label="Help Center (opens in a new tab)" onClick={() => window.open('/help/', '_blank', 'noopener')} />
         <IconButton icon={Settings} label="Settings" onClick={() => openDialog('settings')} />
         <IconButton
           icon={PanelRight}
