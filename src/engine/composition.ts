@@ -38,10 +38,11 @@ export const videoSampleTarget = (it: SequenceItem, t: number, fps: number) =>
  * or a reversed clip – browsers can't play backwards).
  */
 export function sourceTarget(it: SequenceItem, t: number) {
-  const raw = sourceTimeAt(it.clip, t);
+  const held = it.holdFrom !== undefined && t >= it.holdFrom;
+  const raw = sourceTimeAt(it.clip, held ? it.holdFrom! : t);
   const end = Math.max(0, (it.media?.duration ?? Infinity) - 1e-3);
   const target = Math.min(end, Math.max(0, raw));
-  return { target, frozen: !!it.clip.reversed || raw < -1e-6 || raw > end + 1e-6 };
+  return { target, frozen: held || !!it.clip.reversed || raw < -1e-6 || raw > end + 1e-6 };
 }
 
 /** Media frame for an image / video item at time t, or null when none is available. */
