@@ -1,0 +1,184 @@
+@import 'tailwindcss';
+
+@theme {
+  --font-sans: 'Inter', ui-sans-serif, system-ui, -apple-system, 'Segoe UI', Roboto, sans-serif;
+  --font-mono: 'JetBrains Mono', ui-monospace, 'Cascadia Mono', Consolas, monospace;
+
+  /* Surfaces */
+  --color-app: #0e0f12;
+  --color-panel: #16171b;
+  --color-panel-2: #1c1d22;
+  --color-panel-3: #24252b;
+  --color-hover: #2a2b32;
+  --color-line: #26272d;
+  --color-line-strong: #34353c;
+
+  /* Text */
+  --color-fg: #e6e7ea;
+  --color-fg-muted: #9a9ca5;
+  --color-fg-subtle: #6b6d76;
+
+  /* Brand accent */
+  --color-accent: #6c7cff;
+  --color-accent-hover: #8291ff;
+  --color-accent-soft: rgb(108 124 255 / 0.14);
+
+  /* Track colours */
+  --color-track-video: #4f8cff;
+  --color-track-overlay: #b072ff;
+  --color-track-text: #f5a524;
+  --color-track-audio: #22c3a6;
+
+  --color-danger: #f0525f;
+  --color-success: #2fbf71;
+  --color-warning: #f2a93b;
+}
+
+@layer base {
+  html,
+  body,
+  #root {
+    height: 100%;
+    overflow: hidden;
+  }
+  body {
+    background: var(--color-app);
+    color: var(--color-fg);
+    font-family: var(--font-sans);
+    font-size: 12px;
+    -webkit-font-smoothing: antialiased;
+    user-select: none;
+  }
+  input,
+  textarea {
+    user-select: text;
+  }
+  button {
+    cursor: pointer;
+  }
+  button:disabled {
+    cursor: default;
+  }
+  :focus-visible {
+    outline: 1.5px solid var(--color-accent);
+    outline-offset: 1px;
+  }
+}
+
+@layer components {
+  /* Thin, dark scrollbars like desktop NLEs */
+  .scroll-thin {
+    scrollbar-width: thin;
+    scrollbar-color: #3a3b42 transparent;
+  }
+  .scroll-thin::-webkit-scrollbar {
+    width: 8px;
+    height: 8px;
+  }
+  .scroll-thin::-webkit-scrollbar-thumb {
+    background: #3a3b42;
+    border-radius: 8px;
+    border: 2px solid transparent;
+    background-clip: padding-box;
+  }
+  .scroll-thin::-webkit-scrollbar-corner {
+    background: transparent;
+  }
+
+  .field {
+    height: 28px;
+    width: 100%;
+    border-radius: 5px;
+    border: 1px solid var(--color-line-strong);
+    background: var(--color-panel-2);
+    padding: 0 8px;
+    color: var(--color-fg);
+    font-size: 12px;
+    outline: none;
+    transition: border-color 120ms;
+  }
+  .field:hover {
+    border-color: #44454d;
+  }
+  .field:focus {
+    border-color: var(--color-accent);
+  }
+
+  .range {
+    -webkit-appearance: none;
+    appearance: none;
+    height: 4px;
+    border-radius: 4px;
+    background: linear-gradient(
+      to right,
+      var(--color-accent) 0%,
+      var(--color-accent) var(--fill, 0%),
+      #3a3b42 var(--fill, 0%),
+      #3a3b42 100%
+    );
+    cursor: pointer;
+  }
+  .range::-webkit-slider-thumb {
+    -webkit-appearance: none;
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+    box-shadow: 0 0 0 1px rgb(0 0 0 / 0.3);
+  }
+  .range::-moz-range-thumb {
+    width: 11px;
+    height: 11px;
+    border-radius: 50%;
+    background: #fff;
+    border: none;
+  }
+
+  .lane-locked {
+    background-image: repeating-linear-gradient(
+      -45deg,
+      rgb(255 255 255 / 0.025) 0 6px,
+      transparent 6px 12px
+    );
+  }
+}
+
+/* ---- Phase 3: transition library demos (run while the tile is hovered / focused) ---- */
+@layer components {
+  .tr-demo {
+    animation-duration: 1.6s;
+    animation-iteration-count: infinite;
+    animation-timing-function: ease-in-out;
+    animation-play-state: paused;
+  }
+  .group:hover .tr-demo,
+  .group:focus-visible .tr-demo {
+    animation-play-state: running;
+  }
+  .tr-fade { animation-name: tr-fade; }
+  .tr-fade-out { animation-name: tr-fade-out; }
+  .tr-cross { animation-name: tr-cross; }
+  .tr-dissolve { animation-name: tr-cross; animation-timing-function: steps(6); }
+  .tr-wipeLeft { animation-name: tr-wipe-left; }
+  .tr-wipeRight { animation-name: tr-wipe-right; }
+  .tr-wipeUp { animation-name: tr-wipe-up; }
+  .tr-wipeDown { animation-name: tr-wipe-down; }
+  .tr-zoomIn { animation-name: tr-zoom-in; }
+  .tr-zoomOut { animation-name: tr-zoom-out; }
+  .tr-slideLeft { animation-name: tr-slide-left; }
+  .tr-slideRight { animation-name: tr-slide-right; }
+  .tr-blur { animation-name: tr-blur; }
+}
+@keyframes tr-fade { 0%, 50% { opacity: 0; } 100% { opacity: 1; } }
+@keyframes tr-fade-out { 0% { opacity: 1; } 50%, 100% { opacity: 0; } }
+@keyframes tr-cross { from { opacity: 0; } to { opacity: 1; } }
+@keyframes tr-wipe-left { from { clip-path: inset(0 0 0 100%); } to { clip-path: inset(0 0 0 0); } }
+@keyframes tr-wipe-right { from { clip-path: inset(0 100% 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes tr-wipe-up { from { clip-path: inset(100% 0 0 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes tr-wipe-down { from { clip-path: inset(0 0 100% 0); } to { clip-path: inset(0 0 0 0); } }
+@keyframes tr-zoom-in { from { transform: scale(0.4); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes tr-zoom-out { from { transform: scale(1.8); opacity: 0; } to { transform: scale(1); opacity: 1; } }
+@keyframes tr-slide-left { from { transform: translateX(100%); } to { transform: translateX(0); } }
+@keyframes tr-slide-right { from { transform: translateX(-100%); } to { transform: translateX(0); } }
+@keyframes tr-blur { 0% { opacity: 0; filter: blur(6px); } 50% { opacity: 0.5; filter: blur(6px); } 100% { opacity: 1; filter: blur(0); } }
