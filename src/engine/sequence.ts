@@ -29,6 +29,11 @@ export interface SequenceItem {
    */
   renderStart: number;
   renderEnd: number;
+  /**
+   * From this time on the item holds its frame there (outgoing side of a
+   * transition across a split point, see SequenceTransition.hold).
+   */
+  holdFrom?: number;
 }
 
 export interface SequenceTransition {
@@ -39,6 +44,14 @@ export interface SequenceTransition {
   /** Effective (clamped) window: [cut - d/2, cut + d/2]. */
   start: number;
   end: number;
+  /**
+   * The cut is a split point inside one continuous piece of media (same file,
+   * source and speed on both sides). Both sides would show the very same
+   * frames, so the transition would be invisible: instead the outgoing clip
+   * freezes on its frame at the window start while the incoming clip plays
+   * on. Audio switches to the incoming clip (identical samples, no crossfade).
+   */
+  hold?: boolean;
 }
 
 export interface Sequence {
@@ -56,6 +69,13 @@ export interface Sequence {
 }
 
 export const EMPTY_SEQUENCE: Sequence = { key: 'timeline', items: [], transitions: [], duration: 0, still: false, fps: 30 };
+
+/** b continues a's media exactly where a ends (a split, or a copy placed right after it). */
+export function isContinuousSplit(a: Clip, b: Clip): boolean {
+  if (a.text || b.text || a.mediaId !== b.mediaId) return false;
+  if (a.reversed || b.reversed || Math.abs(a.speed - b.speed) > 1e-6) return false;
+  return Math.abs(a.sourceOut - b.sourceIn) < 1e-3;
+}
 
 export function buildTimelineSequence(doc: ProjectDocument, mediaById: Map<string, MediaItem>): Sequence {
   const layerOf = new Map(doc.tracks.map((t, i) => [t.id, doc.tracks.length - i]));
@@ -95,7 +115,9 @@ export function buildTimelineSequence(doc: ProjectDocument, mediaById: Map<strin
     const end = cut + d / 2;
     a.renderEnd = Math.max(a.renderEnd, end);
     b.renderStart = Math.min(b.renderStart, start);
-    transitions.push({ id: tr.id, type: tr.type, fromId: a.clip.id, toId: b.clip.id, start, end });
+    const hold = isContinuousSplit(a.clip, b.clip);
+    if (hold) a.holdFrom = Math.min(a.holdFrom ?? Infinity, start);
+    transitions.push({ id: tr.id, type: tr.type, fromId: a.clip.id, toId: b.clip.id, start, end, ...(hold ? { hold } : {}) });
   }
 
   const items = [...itemsById.values()].sort((a, b) => a.layer - b.layer || a.start - b.start);

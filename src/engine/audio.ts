@@ -53,8 +53,9 @@ export function transitionAudioGain(transitions: readonly SequenceTransition[], 
   for (const tr of transitions) {
     if (t < tr.start || t >= tr.end) continue;
     const p = (t - tr.start) / (tr.end - tr.start);
-    if (tr.fromId === clipId) gain *= 1 - p;
-    else if (tr.toId === clipId) gain *= p;
+    // A split inside one media: the incoming clip carries the (identical) audio on its own.
+    if (tr.fromId === clipId) gain *= tr.hold ? 0 : 1 - p;
+    else if (tr.toId === clipId) gain *= tr.hold ? 1 : p;
   }
   return gain;
 }

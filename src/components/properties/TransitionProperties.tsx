@@ -3,6 +3,7 @@ import { MIN_TRANSITION_DURATION, TRANSITIONS } from '../../engine/catalog';
 import { maxTransitionDuration, useProjectStore } from '../../store/projectStore';
 import { useUiStore } from '../../store/uiStore';
 import { previewEngine } from '../../engine/previewEngine';
+import { isContinuousSplit } from '../../engine/sequence';
 import type { Transition, TransitionType } from '../../types';
 import { Button } from '../controls/Button';
 import { Select } from '../controls/Select';
@@ -19,6 +20,7 @@ export function TransitionProperties({ transition }: { transition: Transition })
   const setSelection = useUiStore((s) => s.setSelection);
   if (!from || !to) return null;
   const cut = to.start;
+  const split = isContinuousSplit(from, to);
 
   return (
     <>
@@ -45,8 +47,9 @@ export function TransitionProperties({ transition }: { transition: Transition })
         <InfoRow label="To" value={to.name} />
         <InfoRow label="Window" value={<span className="font-mono">{(cut - transition.duration / 2).toFixed(2)}s → {(cut + transition.duration / 2).toFixed(2)}s</span>} />
         <p className="text-[10px] leading-relaxed text-fg-subtle">
-          Centred on the cut. Each clip uses media beyond its in/out point when available, otherwise it holds its first / last frame. Audio crossfades
-          across the same window.
+          {split
+            ? 'Centred on the cut. This cut splits one continuous video, so the outgoing clip freezes on its frame while the video plays on underneath (the sound continues unchanged).'
+            : 'Centred on the cut. Each clip uses media beyond its in/out point when available, otherwise it holds its first / last frame. Audio crossfades across the same window.'}
         </p>
         <Button
           className="w-full"
