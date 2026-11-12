@@ -39,7 +39,7 @@ function apply(choice: Choice) {
 }
 
 const CSS = `
-.vy-consent{position:fixed;left:16px;right:16px;bottom:16px;z-index:9999;max-width:560px;margin-left:auto;
+.vy-consent{position:fixed;left:16px;right:16px;top:16px;z-index:9999;max-width:560px;margin:0 auto;
   padding:18px 20px;border-radius:14px;border:1px solid #34353c;background:#1c1d22;color:#e6e7ea;
   box-shadow:0 24px 70px -20px rgba(0,0,0,.9);font:14px/1.55 Inter,ui-sans-serif,system-ui,sans-serif;
   animation:vy-consent-in .25s ease-out}
@@ -50,7 +50,7 @@ const CSS = `
 .vy-consent button{height:36px;padding:0 16px;border-radius:9px;font:600 13px Inter,ui-sans-serif,system-ui,sans-serif;cursor:pointer;border:1px solid #34353c;background:#24252b;color:#e6e7ea}
 .vy-consent button:hover{background:#2a2b32}
 .vy-consent button.vy-accept{border-color:transparent;background:linear-gradient(135deg,#6c7cff,#8a6cff);color:#fff}
-@keyframes vy-consent-in{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:none}}
+@keyframes vy-consent-in{from{opacity:0;transform:translateY(-8px)}to{opacity:1;transform:none}}
 @media (prefers-reduced-motion:reduce){.vy-consent{animation:none}}`;
 
 function showBanner() {
