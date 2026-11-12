@@ -5,11 +5,13 @@
 
 [build.environment]
   NODE_VERSION = "22"
+  # Google Analytics 4 measurement id (public: it is part of every page). Website pages + editor events.
+  VITE_GA_ID = "G-KT38D1D0XN"
   # Editor "Feedback" dialog → Google Apps Script web app → Google Sheet (tools/feedback-apps-script.gs).
   # Public by design: the URL ends up in the site's JavaScript anyway.
   VITE_FEEDBACK_URL = "https://script.google.com/macros/s/AKfycbwy_tdqLST5F478r8gCbkSKFlFjoZnDOBmhtvZA5yESyERycFSPc2zohG-sgPQQQvfglw/exec"
 
-# Set VITE_SITE_URL, VITE_CONTACT_EMAIL, VITE_GA_ID and VITE_ADSENSE_CLIENT in
+# Set VITE_SITE_URL, VITE_CONTACT_EMAIL and VITE_ADSENSE_CLIENT in
 # Site settings → Environment variables (see .env.example).
 
 [[redirects]]
