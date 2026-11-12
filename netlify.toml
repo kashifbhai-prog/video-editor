@@ -11,12 +11,14 @@
   VITE_CONTACT_EMAIL = "sk_hashmi@yahoo.com"
   # Google Analytics 4 measurement id (public: it is part of every page). Website pages + editor events.
   VITE_GA_ID = "G-KT38D1D0XN"
+  # Google AdSense publisher id (public). Ads + ads.txt on the website pages only, never in the editor.
+  VITE_ADSENSE_CLIENT = "ca-pub-0639005332799636"
   # Editor "Feedback" dialog → Google Apps Script web app → Google Sheet (tools/feedback-apps-script.gs).
   # Public by design: the URL ends up in the site's JavaScript anyway.
   VITE_FEEDBACK_URL = "https://script.google.com/macros/s/AKfycbwy_tdqLST5F478r8gCbkSKFlFjoZnDOBmhtvZA5yESyERycFSPc2zohG-sgPQQQvfglw/exec"
 
-# Set VITE_ADSENSE_CLIENT (and optionally VITE_ADSENSE_SLOT) in
-# Site settings → Environment variables (see .env.example).
+# Optional: VITE_ADSENSE_SLOT (a display ad unit id) can be added here or in
+# Site settings → Environment variables (see .env.example). Auto ads work without it.
 
 [[redirects]]
   from = "/editor"
