@@ -37,7 +37,29 @@ export interface SitePage {
   title: string;
 }
 
-/** Pages listed in the sitemap (help articles are added from HELP_ARTICLES). */
+/**
+ * Landing pages for common searches ("add subtitles to video", "remove background noise"…).
+ * Each lives at /<slug>/ (a folder with index.html, data-nav="tool"). They are linked from the
+ * footer and from each other ({{moreTools}}), and listed in the sitemap.
+ */
+export interface ToolPage {
+  slug: string;
+  /** Short name for links and cards. */
+  title: string;
+  /** One line for the cards that link to the page. */
+  summary: string;
+}
+
+export const TOOL_PAGES: ToolPage[] = [
+  { slug: 'free-video-editor-no-watermark', title: 'Free video editor – no watermark', summary: 'A complete online video editor: no sign-up, no watermark, MP4 export up to 4K.' },
+  { slug: 'add-subtitles-to-video', title: 'Add subtitles to video', summary: 'Generate captions from speech automatically, edit them and burn them in or save SRT.' },
+  { slug: 'urdu-subtitles', title: 'Urdu subtitles generator', summary: 'Turn Urdu speech into Urdu captions in Nastaliq script – free and in your browser.' },
+  { slug: 'remove-background-noise-from-video', title: 'Remove background noise', summary: 'Clean fan, traffic and hum out of a voice with AI noise removal – before/after preview.' },
+  { slug: 'remove-silence-from-video', title: 'Remove silence from video', summary: 'Find every pause in a talking video and cut them all at once, with captions in sync.' },
+  { slug: 'remove-video-background', title: 'Remove video background', summary: 'Remove the background behind a person – no green screen – and replace it with anything.' },
+];
+
+/** Pages listed in the sitemap (help articles and tool pages are added separately). */
 export const SITE_PAGES: SitePage[] = [
   { path: '/', title: 'Home' },
   { path: '/help/', title: 'Help Center' },

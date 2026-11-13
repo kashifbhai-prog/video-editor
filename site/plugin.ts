@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { Plugin } from 'vite';
-import { HELP_ARTICLES, HELP_GROUPS, SITE_PAGES } from './content';
+import { HELP_ARTICLES, HELP_GROUPS, SITE_PAGES, TOOL_PAGES } from './content';
 
 // ---------------------------------------------------------------------------
 // Website build plugin. Each page is a small HTML file holding only its own
@@ -98,6 +98,10 @@ function footer(): string {
       <a href="/help/keyboard-shortcuts/">Keyboard shortcuts</a>
     </div>
     <div>
+      <h3>Free tools</h3>
+      ${TOOL_PAGES.map((t) => `<a href="/${t.slug}/">${esc(t.title)}</a>`).join('\n      ')}
+    </div>
+    <div>
       <h3>Company</h3>
       <a href="/about/">About</a>
       <a href="/contact/">Contact</a>
@@ -137,10 +141,101 @@ function helpPager(slug: string): string {
   </nav>`;
 }
 
+/** Cards linking to the other tool pages (the current one is left out). */
+function moreTools(url: string): string {
+  const cards = TOOL_PAGES.filter((t) => `/${t.slug}/` !== url)
+    .map((t) => `<a class="card card-link" href="/${t.slug}/"><h3>${esc(t.title)}</h3><p>${esc(t.summary)}</p><span class="card-more">Learn more ${ICON.arrow}</span></a>`)
+    .join('');
+  return `<div class="grid grid-3">${cards}</div>`;
+}
+
+const plain = (html: string) =>
+  html
+    .replace(/<[^>]+>/g, '')
+    .replace(/&nbsp;/g, ' ')
+    .replace(/&lt;/g, '<')
+    .replace(/&gt;/g, '>')
+    .replace(/&quot;/g, '"')
+    .replace(/&#39;/g, "'")
+    .replace(/&amp;/g, '&')
+    .replace(/\s+/g, ' ')
+    .trim();
+
+/**
+ * schema.org structured data (JSON-LD) so search engines understand what each page is:
+ * the home page describes the site, the organisation and the app; tool pages the app plus a
+ * breadcrumb; help articles an article plus a breadcrumb. Any FAQ (<details><summary>) on a
+ * page becomes an FAQPage. Nothing invented – no ratings or reviews.
+ */
+function structuredData(o: { url: string; pageUrl: string; title: string; description: string; nav: string; body: string; s: SiteSettings }): string {
+  const base = o.s.siteUrl.replace(/\/$/, '');
+  const org = { '@type': 'Organization', '@id': `${base}/#org`, name: 'Cutistic', url: `${base}/`, logo: `${base}/apple-touch-icon.png` };
+  const app = {
+    '@type': 'SoftwareApplication',
+    '@id': `${base}/#app`,
+    name: 'Cutistic',
+    url: `${base}/editor/`,
+    applicationCategory: 'MultimediaApplication',
+    applicationSubCategory: 'Video editor',
+    operatingSystem: 'Any – runs in a web browser (Chrome, Edge) on Windows, macOS, Linux and ChromeOS',
+    description:
+      'Free video editor that runs in your browser: multi-track timeline, titles, transitions, effects, colour, audio mixing, AI auto captions, silence removal, noise removal and background removal. MP4 export up to 4K, no watermark, no sign-up.',
+    image: `${base}/img/og-image.png`,
+    screenshot: `${base}/img/editor-hero.webp`,
+    offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+    isAccessibleForFree: true,
+    publisher: { '@id': `${base}/#org` },
+    featureList: [
+      'Multi-track timeline',
+      'Titles and text in any language, including Urdu and Arabic',
+      '12 transitions and 12 effects',
+      'Colour correction and filters',
+      'Keyframe animation',
+      'Audio mixing, EQ and noise reduction',
+      'AI auto captions and SRT subtitles',
+      'AI silence removal',
+      'AI background removal',
+      'MP4 export up to 4K without watermark',
+    ],
+  };
+  const crumbs = (items: [string, string][]) => ({
+    '@type': 'BreadcrumbList',
+    itemListElement: items.map(([name, path], i) => ({ '@type': 'ListItem', position: i + 1, name, item: `${base}${path}` })),
+  });
+
+  const graph: object[] = [];
+  const helpSlug = o.nav === 'help' ? o.url.replace(/^\/help\/|\/$/g, '') : '';
+  const article = HELP_ARTICLES.find((a) => a.slug === helpSlug);
+  if (o.url === '/') {
+    graph.push({ '@type': 'WebSite', '@id': `${base}/#website`, name: 'Cutistic', url: `${base}/`, description: o.description, publisher: { '@id': `${base}/#org` } }, org, app);
+  } else if (o.nav === 'tool') {
+    graph.push({ ...app, '@id': undefined, description: o.description, publisher: org }, crumbs([['Home', '/'], [o.title, o.url]]));
+  } else if (article) {
+    graph.push(
+      { '@type': 'TechArticle', headline: article.title, description: o.description, url: o.pageUrl, image: `${base}/img/og-image.png`, inLanguage: 'en', author: { '@id': `${base}/#org` }, publisher: org, about: { '@id': `${base}/#app` } },
+      crumbs([['Home', '/'], ['Help Center', '/help/'], [article.title, o.url]]),
+    );
+  } else if (o.url === '/help/') {
+    graph.push(crumbs([['Home', '/'], ['Help Center', '/help/']]));
+  }
+
+  const faqs = [...o.body.matchAll(/<details>\s*<summary>([\s\S]*?)<\/summary>([\s\S]*?)<\/details>/g)].map((m) => ({
+    '@type': 'Question',
+    name: plain(m[1]),
+    acceptedAnswer: { '@type': 'Answer', text: plain(m[2]) },
+  }));
+  if (faqs.length) graph.push({ '@type': 'FAQPage', mainEntity: faqs });
+  if (!graph.length) return '';
+  // "<" escaped so text can never close the script tag.
+  const json = JSON.stringify({ '@context': 'https://schema.org', '@graph': graph }).replace(/</g, '\\u003c');
+  return `<script type="application/ld+json">${json}</script>`;
+}
+
 /** Fills {{placeholders}} in page content. */
-function fill(html: string, s: SiteSettings): string {
+function fill(html: string, s: SiteSettings, url: string): string {
   const email = esc(s.contactEmail);
   return html
+    .replace(/\{\{moreTools\}\}/g, () => moreTools(url))
     .replace(/\{\{email\}\}/g, email)
     .replace(/\{\{siteUrl\}\}/g, esc(s.siteUrl))
     .replace(/\{\{year\}\}/g, String(new Date().getFullYear()))
@@ -162,9 +257,10 @@ function renderPage(html: string, url: string, s: SiteSettings): string {
   const nav = attr(html, 'data-nav');
   const helpSlug = attr(html, 'data-help');
   const isHelp = nav === 'help';
-  const body = fill(/<body[^>]*>([\s\S]*)<\/body>/.exec(html)?.[1] ?? '', s);
+  const body = fill(/<body[^>]*>([\s\S]*)<\/body>/.exec(html)?.[1] ?? '', s, url);
   const pageUrl = s.siteUrl.replace(/\/$/, '') + url;
   const fullTitle = url === '/' ? `${title}` : `${title} · Cutistic`;
+  const ld = nav === '404' ? '' : structuredData({ url, pageUrl, title, description, nav, body, s });
   const article = HELP_ARTICLES.find((a) => a.slug === helpSlug);
   const crumbs = isHelp
     ? `<nav class="crumbs container" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/help/">Help Center</a>${article ? `<span>/</span><span aria-current="page">${esc(article.title)}</span>` : ''}</nav>`
@@ -189,7 +285,7 @@ function renderPage(html: string, url: string, s: SiteSettings): string {
     <meta property="og:description" content="${esc(description)}" />
     <meta property="og:url" content="${esc(pageUrl)}" />
     <meta property="og:image" content="${esc(s.siteUrl.replace(/\/$/, ''))}/img/og-image.png" />
-    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:card" content="summary_large_image" />${ld ? `\n    ${ld}` : ''}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
     <link rel="stylesheet" href="https://fonts.googleapis.com/css2?family=Inter:wght@400..800&display=swap" />
@@ -208,7 +304,7 @@ function renderPage(html: string, url: string, s: SiteSettings): string {
 
 function sitemap(s: SiteSettings): string {
   const base = s.siteUrl.replace(/\/$/, '');
-  const urls = [...SITE_PAGES.map((p) => p.path), ...HELP_ARTICLES.map((a) => `/help/${a.slug}/`), '/editor/'];
+  const urls = [...SITE_PAGES.map((p) => p.path), ...TOOL_PAGES.map((t) => `/${t.slug}/`), ...HELP_ARTICLES.map((a) => `/help/${a.slug}/`), '/editor/'];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${base}${u}</loc></url>`).join('\n')}\n</urlset>\n`;
 }
 
