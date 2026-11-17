@@ -10,9 +10,12 @@ import {
   isRangeFree,
   quantizeToFrame,
   resolvePlacement,
+  rippleTrim,
   snapTime,
   trimLeft,
+  trimLeftFree,
   trimRight,
+  trimRightFree,
 } from '../../engine/timelineModel';
 import { getSelectedClipIds, selectClip, selectClips } from '../../services/editingService';
 import { clearDrag, useDragStore, type ClipPreview } from './dragStore';
@@ -70,8 +73,11 @@ export function useClipDrag(pps: number) {
       const snapThreshold = SNAP_PX / pps;
       const fps = doc.canvas.frameRate;
       const sourceTrack = doc.tracks.find((t) => t.id === clip.trackId)!;
+      // Main-track magnet: trims keep the clip in place and move the later clips (no gaps).
+      const magnetic = mode !== 'move' && sourceTrack.isMain && useUiStore.getState().mainMagnet;
       const origin = { x: e.clientX, y: e.clientY };
       let moved = false;
+      let rippleTiming: ReturnType<typeof trimLeftFree> | null = null;
 
       // Listen on window, not the element: when a clip is dragged onto another
       // track React re-mounts it under a different lane, and the original element
@@ -122,6 +128,18 @@ export function useClipDrag(pps: number) {
               sourceOut: c.sourceOut,
             };
           }
+        } else if (magnetic) {
+          // The dragged edge follows the pointer in the clip's original position (so it can snap to
+          // the playhead); the result is shown rippled: the clip keeps its start, later clips move.
+          const edge = mode === 'trim-left' ? clip.start : clipEnd(clip);
+          const s = snap(quantizeToFrame(edge + dx, fps));
+          const r = mode === 'trim-left' ? trimLeftFree(clip, s.time, media) : trimRightFree(clip, s.time, media);
+          const reached = mode === 'trim-left' ? r.start : r.start + (r.sourceOut - r.sourceIn) / clip.speed;
+          if (s.snapped && Math.abs(reached - s.time) < 1e-6) snapAt = s.time;
+          for (const c of Object.values(rippleTrim(doc, clip, r))) {
+            previews[c.id] = { start: c.start, trackId: c.trackId, sourceIn: c.sourceIn, sourceOut: c.sourceOut };
+          }
+          rippleTiming = r;
         } else {
           const neighbours = clipsOnTrack(doc, clip.trackId);
           if (mode === 'trim-left') {
@@ -150,6 +168,10 @@ export function useClipDrag(pps: number) {
         if (!commit || !moved || !previews[clip.id]) return;
         const project = useProjectStore.getState();
 
+        if (magnetic && rippleTiming) {
+          project.rippleTrimClip(clip.id, rippleTiming);
+          return;
+        }
         if (mode !== 'move') {
           const p = previews[clip.id];
           project.setClipTiming(clip.id, { start: p.start, sourceIn: p.sourceIn, sourceOut: p.sourceOut });

@@ -81,9 +81,18 @@ export async function sendFeedback(f: FeedbackInput): Promise<FeedbackResult> {
         body: JSON.stringify({ ...f, kind: FEEDBACK_KIND_LABEL[f.kind], sentAt: new Date().toISOString() }),
       });
       if (!res.ok) return { ok: false, error: `The server answered ${res.status}. Please try again in a moment.` };
-      const data = (await res.json().catch(() => ({}))) as { ok?: boolean; error?: string };
-      if (data.ok === false) return { ok: false, error: data.error || 'Your feedback could not be saved. Please try again.' };
-      return { ok: true, via: 'server' };
+      // Only an explicit {"ok":true} from the feedback service counts as saved. Anything else – a
+      // proxy / firewall / extension page, a Google sign-in page, an empty body – is a failure, so
+      // the visitor is never told "sent" when nothing reached the sheet.
+      const data = (await res.json().catch(() => null)) as { ok?: boolean; error?: string } | null;
+      if (data?.ok === true) return { ok: true, via: 'server' };
+      if (data?.ok === false && data.error) return { ok: false, error: data.error };
+      return {
+        ok: false,
+        error: CONTACT
+          ? `Your feedback could not be delivered – your network or a browser extension may be blocking it. Please try another network, or email us at ${CONTACT}.`
+          : 'Your feedback could not be delivered – your network or a browser extension may be blocking it. Please try another network.',
+      };
     } catch {
       return { ok: false, error: 'Could not reach the feedback service. Check your internet connection and try again.' };
     }

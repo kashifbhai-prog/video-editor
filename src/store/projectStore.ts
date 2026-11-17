@@ -18,11 +18,13 @@ import {
   clipDuration,
   clipEnd,
   clipsOnTrack,
+  closeGaps,
   defaultClipLength,
   isRangeFree,
   MIN_CLIP_DURATION,
   resolvePlacement,
   retimeKeyframesForTrim,
+  rippleTrim,
   sourceLimit,
   splitClip,
   trackAccepts,
@@ -227,6 +229,11 @@ interface ProjectState {
   moveClips: (moves: ClipMove[]) => boolean;
   /** Applies a trim result (start / sourceIn / sourceOut) to a clip. */
   setClipTiming: (id: string, timing: Pick<Clip, 'start' | 'sourceIn' | 'sourceOut'>) => void;
+  /**
+   * Magnetic-track trim: `timing` is a free trim result (trimLeftFree / trimRightFree). The clip keeps
+   * its start and later clips on its track move by the change in length (see rippleTrim).
+   */
+  rippleTrimClip: (id: string, timing: Pick<Clip, 'start' | 'sourceIn' | 'sourceOut'>) => void;
   updateClip: (id: string, patch: ClipPropertyPatch, coalesceKey?: string) => void;
   /** Applies a patch computed per clip to several clips as one undo step. Returns how many changed. */
   updateClips: (ids: string[], patchFor: (clip: Clip) => ClipPropertyPatch | null, coalesceKey?: string) => number;
@@ -240,7 +247,8 @@ interface ProjectState {
   moveTrack: (id: string, direction: -1 | 1) => boolean;
   /** Splits clips at timeline time `t`; returns the ids of the new right-hand parts. */
   splitClips: (ids: string[], t: number, isStill: (mediaId: string) => boolean) => string[];
-  deleteClips: (ids: string[]) => number;
+  /** Deletes clips. With `closeGapOnMain`, later clips on the main track move left to fill the gap. */
+  deleteClips: (ids: string[], closeGapOnMain?: boolean) => number;
   /** Inserts copies of clips (new ids), each at its `start` or the nearest free slot. Returns new ids. */
   insertClipCopies: (clips: Clip[]) => string[];
   removeClipsForMedia: (mediaId: string) => void;
@@ -500,6 +508,15 @@ export const useProjectStore = create<ProjectState>()((set, get) => ({
       return { ...d, clips: { ...d.clips, [id]: { ...clip, ...timing, ...(keyframes ? { keyframes } : {}) } } };
     }),
 
+  rippleTrimClip: (id, timing) =>
+    get().commit((d) => {
+      const clip = d.clips[id];
+      if (!isEditable(d, clip)) return d;
+      if (timing.sourceOut - timing.sourceIn < MIN_CLIP_DURATION * clip.speed - 1e-9 || timing.sourceIn < -1e-9) return d;
+      const changed = rippleTrim(d, clip, timing);
+      return { ...d, clips: { ...d.clips, ...changed } };
+    }),
+
   updateClip: (id, patch, coalesceKey) =>
     get().commit((d) => {
       const clip = d.clips[id];
@@ -607,17 +624,25 @@ export const useProjectStore = create<ProjectState>()((set, get) => ({
     return created;
   },
 
-  deleteClips: (ids) => {
+  deleteClips: (ids, closeGapOnMain = false) => {
     let removed = 0;
     get().commit((d) => {
       const clips = { ...d.clips };
+      const deleted: Clip[] = [];
       for (const id of ids) {
         if (isEditable(d, clips[id])) {
+          deleted.push(clips[id]);
           delete clips[id];
           removed++;
         }
       }
-      return removed ? { ...d, clips } : d;
+      if (!removed) return d;
+      const main = d.tracks.find((t) => t.isMain);
+      if (closeGapOnMain && main && !main.locked) {
+        const onMain = deleted.filter((c) => c.trackId === main.id);
+        if (onMain.length) Object.assign(clips, closeGaps(clipsOnTrack({ clips }, main.id), onMain));
+      }
+      return { ...d, clips };
     });
     return removed;
   },

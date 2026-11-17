@@ -1,4 +1,4 @@
-import { CopyPlus, Magnet, Maximize2, Plus, Scissors, SquareMinus, Trash2, ZoomIn, ZoomOut } from 'lucide-react';
+import { CopyPlus, Link2, Magnet, Maximize2, Plus, Scissors, SquareMinus, Trash2, ZoomIn, ZoomOut } from 'lucide-react';
 import { useProjectStore } from '../../store/projectStore';
 import { useUiStore, ZOOM_LEVELS } from '../../store/uiStore';
 import { usePlaybackStore } from '../../store/playbackStore';
@@ -26,6 +26,8 @@ export function TimelineToolbar({ onFit }: TimelineToolbarProps) {
   const setSelection = useUiStore((s) => s.setSelection);
   const snapping = useUiStore((s) => s.snapping);
   const setSnapping = useUiStore((s) => s.setSnapping);
+  const mainMagnet = useUiStore((s) => s.mainMagnet);
+  const setMainMagnet = useUiStore((s) => s.setMainMagnet);
   const tracks = useProjectStore((s) => s.document.tracks);
   const clips = useProjectStore((s) => s.document.clips);
   const removeTrack = useProjectStore((s) => s.removeTrack);
@@ -72,6 +74,12 @@ export function TimelineToolbar({ onFit }: TimelineToolbarProps) {
           label={snapping ? 'Snapping on' : 'Snapping off'}
           active={snapping}
           onClick={() => setSnapping(!snapping)}
+        />
+        <IconButton
+          icon={Link2}
+          label={mainMagnet ? 'Main track magnet on – trimming or deleting on the main track closes the gap' : 'Main track magnet off – trims and deletes on the main track leave a gap'}
+          active={mainMagnet}
+          onClick={() => setMainMagnet(!mainMagnet)}
         />
         <span className="ml-2 hidden text-[11px] text-fg-subtle lg:inline">
           {selectedClips.length

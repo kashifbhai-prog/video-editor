@@ -38,6 +38,8 @@ interface UiState {
   previewMediaId: string | null;
   previewMode: PreviewMode;
   snapping: boolean;
+  /** Main-track magnet (CapCut-style): trims and deletes on the main track never leave gaps. */
+  mainMagnet: boolean;
   /** Copied clips (Ctrl+C) – plain data, never media binaries. */
   clipboard: Clip[];
   /** Bumped by "Show Properties": the inspector switches to the selected item. */
@@ -66,6 +68,7 @@ interface UiState {
   /** Switches the preview back to the edited timeline. */
   showTimeline: () => void;
   setSnapping: (on: boolean) => void;
+  setMainMagnet: (on: boolean) => void;
   setClipboard: (clips: Clip[]) => void;
 
   setMediaFilter: (f: MediaFilter) => void;
@@ -92,6 +95,7 @@ export const useUiStore = create<UiState>()((set, get) => ({
   previewMediaId: null,
   previewMode: 'timeline',
   snapping: true,
+  mainMagnet: prefs.mainMagnet ?? true,
   clipboard: [],
   propertiesFocus: 0,
 
@@ -124,6 +128,10 @@ export const useUiStore = create<UiState>()((set, get) => ({
     if (get().previewMode !== 'timeline') set({ previewMode: 'timeline' });
   },
   setSnapping: (snapping) => set({ snapping }),
+  setMainMagnet: (mainMagnet) => {
+    prefsStorage.save({ mainMagnet });
+    set({ mainMagnet });
+  },
   setClipboard: (clipboard) => set({ clipboard }),
 
   setMediaFilter: (mediaFilter) => set({ mediaFilter }),

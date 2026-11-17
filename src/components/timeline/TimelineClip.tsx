@@ -7,6 +7,7 @@ import { moveKeyframesAt } from '../../services/advancedEditing';
 import { previewEngine } from '../../engine/previewEngine';
 import { useUiStore } from '../../store/uiStore';
 import { requestFilmstrip, useFilmstripStore } from '../../services/filmstrip';
+import { requestClipWaveform, useClipWaveformStore } from '../../services/clipWaveform';
 import { formatDuration } from '../../utils/format';
 import { cn } from '../../utils/cn';
 import { Waveform } from '../media/MediaItemView';
@@ -38,7 +39,7 @@ function Filmstrip({ clip, media, width, height, pps }: { clip: Clip; media: Med
   const count = Math.max(1, Math.min(MAX_TILES, Math.ceil(width / tileW)));
   if (count === MAX_TILES) tileW = width / count;
   return (
-    <div className="absolute inset-0 overflow-hidden">
+    <div className="absolute inset-x-0 top-0 overflow-hidden" style={{ height }}>
       {Array.from({ length: count }, (_, i) => {
         // Sample the middle of the tile's *visible* part – the last tile (or a
         // single tile on a short clip) can extend past the clip's end.
@@ -130,6 +131,37 @@ function FadeRamps({ clip, pps, width, height }: { clip: Clip; pps: number; widt
   );
 }
 
+/** Height of the audio strip under a video clip's filmstrip (CapCut-style). */
+const AUDIO_STRIP_H = 18;
+
+/**
+ * The sound of a video clip, drawn under its filmstrip: the part of the media's
+ * waveform the clip plays (mirrored when reversed). Dimmed when the clip is muted
+ * (volume 0, e.g. after "Extract audio"). Nothing is drawn for video without sound.
+ */
+function VideoAudioStrip({ clip, media, width, top }: { clip: Clip; media: MediaItem; width: number; top: number }) {
+  const computed = useClipWaveformStore((s) => s.peaks[media.id]);
+  useEffect(() => requestClipWaveform(media), [media]);
+  const peaks = media.waveform ?? computed;
+  if (!peaks?.length || !media.duration) return null;
+  const n = peaks.length;
+  const from = Math.max(0, Math.floor((clip.sourceIn / media.duration) * n));
+  const to = Math.min(n, Math.max(from + 1, Math.ceil((clip.sourceOut / media.duration) * n)));
+  let part = peaks.slice(from, to);
+  if (clip.reversed) part = part.reverse();
+  const muted = clip.volume <= 0;
+  return (
+    <div
+      className={cn('pointer-events-none absolute inset-x-0 bottom-0 border-t border-black/40 bg-[#0f3b3a]', muted && 'opacity-40')}
+      style={{ top }}
+      data-audio-strip={muted ? 'muted' : 'on'}
+      title={muted ? 'Clip sound is muted' : undefined}
+    >
+      <Waveform peaks={part} maxBars={Math.max(8, Math.floor(width / 3))} className="h-full w-full fill-[#5fd4c4]" />
+    </div>
+  );
+}
+
 function ImageTiles({ media, width, height }: { media: MediaItem; width: number; height: number }) {
   const aspect = media.width && media.height ? media.width / media.height : 16 / 9;
   const tileW = Math.max(24, height * aspect);
@@ -178,6 +210,9 @@ export const TimelineClip = memo(function TimelineClip({
   const graded = !!clip.filter || (clip.effects?.length ?? 0) > 0 || (!!clip.color && Object.values(clip.color).some((v) => Math.abs(v) > 1e-4));
   const innerH = height - 4;
   const showLabel = width > 36;
+  // Video clips on the main video track show their sound under the filmstrip.
+  const audioStrip = trackType === 'video' && media?.kind === 'video' && !missing && innerH >= 48;
+  const stripH = audioStrip ? innerH - AUDIO_STRIP_H : innerH;
 
   return (
     <div
@@ -213,7 +248,10 @@ export const TimelineClip = memo(function TimelineClip({
           {showLabel && <span className="truncate">Media missing</span>}
         </div>
       ) : media.kind === 'video' ? (
-        <Filmstrip clip={clip} media={media} width={width} height={innerH} pps={pps} />
+        <>
+          <Filmstrip clip={clip} media={media} width={width} height={stripH} pps={pps} />
+          {audioStrip && <VideoAudioStrip clip={clip} media={media} width={width} top={stripH} />}
+        </>
       ) : media.kind === 'image' ? (
         <ImageTiles media={media} width={width} height={innerH} />
       ) : (
@@ -227,7 +265,10 @@ export const TimelineClip = memo(function TimelineClip({
         </div>
       )}
       {(clip.speed !== 1 || clip.reversed || graded) && showLabel && (
-        <span className="pointer-events-none absolute bottom-0.5 left-1 flex items-center gap-1 rounded bg-black/60 px-1 font-mono text-[9px] text-white/90">
+        <span
+          className="pointer-events-none absolute left-1 z-[1] flex items-center gap-1 rounded bg-black/60 px-1 font-mono text-[9px] text-white/90"
+          style={{ bottom: audioStrip ? AUDIO_STRIP_H + 2 : 2 }}
+        >
           {clip.speed !== 1 && <span>{clip.speed}×</span>}
           {clip.reversed && <Rewind size={9} aria-label="Reversed" />}
           {graded && <Sparkles size={9} aria-label="Effects or colour applied" />}

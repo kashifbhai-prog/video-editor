@@ -8,7 +8,8 @@ export const MIN_TIMELINE_SECONDS = 60;
 export const TIMELINE_TAIL_SECONDS = 15;
 
 export const TRACK_HEIGHT: Record<TrackType, number> = {
-  video: 64,
+  // Filmstrip + the clip's audio strip underneath.
+  video: 76,
   overlay: 44,
   text: 36,
   audio: 48,

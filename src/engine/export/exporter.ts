@@ -68,8 +68,34 @@ export class ExportError extends Error {}
 const STAGE_WEIGHT = { prepare: 0.03, audio: 0.1, video: 0.82, finalize: 0.03, verify: 0.02 };
 const STAGE_BASE = { prepare: 0, audio: 0.03, video: 0.13, finalize: 0.95, verify: 0.98 };
 
-/** Yields to the event loop so the UI stays responsive (a macrotask, unlike await on a resolved promise). */
-const yieldToUi = () => new Promise<void>((r) => setTimeout(r, 0));
+/**
+ * Yields to the event loop so the UI stays responsive (a macrotask, unlike await on a
+ * resolved promise). A MessageChannel message is used rather than setTimeout: background
+ * tabs throttle timers to one per second (or less), which would stall the export – and a
+ * codec left waiting that long can be reclaimed by the browser as "inactive".
+ */
+const yieldChannel = typeof MessageChannel !== 'undefined' ? new MessageChannel() : null;
+const yieldQueue: (() => void)[] = [];
+if (yieldChannel) yieldChannel.port1.onmessage = () => yieldQueue.shift()?.();
+const yieldToUi = () =>
+  new Promise<void>((r) => {
+    if (!yieldChannel) return void setTimeout(r, 0);
+    yieldQueue.push(r);
+    yieldChannel.port2.postMessage(0);
+  });
+
+/** Chromium closes codecs that sat idle for a while ("Codec reclaimed due to inactivity"). */
+const isCodecReclaimed = (err: unknown) => err instanceof DOMException && err.name === 'QuotaExceededError' && /reclaimed/i.test(err.message);
+
+/** Seconds of audio handed to the encoder per step, interleaved with the video frames. */
+const AUDIO_SLICE_SECONDS = 1;
+
+/** A copy of [from, to) samples of `buf` as its own AudioBuffer. */
+function sliceAudio(buf: AudioBuffer, from: number, to: number): AudioBuffer {
+  const out = new AudioBuffer({ length: to - from, numberOfChannels: buf.numberOfChannels, sampleRate: buf.sampleRate });
+  for (let c = 0; c < buf.numberOfChannels; c++) out.copyToChannel(buf.getChannelData(c).subarray(from, to), c);
+  return out;
+}
 
 function checkAbort(signal: AbortSignal) {
   if (signal.aborted) throw new DOMException('Export cancelled', 'AbortError');
@@ -85,25 +111,49 @@ interface DecodedFrame {
 
 /** Per video clip: a monotonic stream of decoded frames for the output frames where the clip is live. */
 class ClipFrames {
-  private iter: AsyncGenerator<VideoSample | null, void, unknown>;
+  private iter: AsyncGenerator<VideoSample | null, void, unknown> | null = null;
   private current: VideoSample | null = null;
   private retagged: VideoFrame | null = null;
   private frame: DecodedFrame | null = null;
   private pos = 0;
+  /** Decoder restarts after the browser reclaimed it (bounded, so a real failure still surfaces). */
+  private restarts = 0;
   constructor(
-    sink: VideoSampleSink,
+    /** Creates a fresh decoder (sink) – the first time, and again if the browser reclaims it. */
+    private readonly openSink: () => VideoSampleSink,
     private readonly frameIndices: number[],
-    timestamps: number[],
+    private readonly timestamps: number[],
     /** Colour space matching the preview (null = keep the decoder's tag). */
     private readonly colorSpace: VideoColorSpaceInit | null,
-  ) {
-    this.iter = sink.samplesAtTimestamps(timestamps);
+  ) {}
+  /** Last output frame this clip is shown in. */
+  get lastFrame() {
+    return this.frameIndices[this.frameIndices.length - 1] ?? -1;
+  }
+  /** Decoder iterator for the frames still to come (opened lazily, only when the clip is reached). */
+  private iterator() {
+    this.iter ??= this.openSink().samplesAtTimestamps(this.timestamps.slice(this.pos));
+    return this.iter;
+  }
+  private async next() {
+    for (;;) {
+      try {
+        return await this.iterator().next();
+      } catch (err) {
+        if (!isCodecReclaimed(err) || this.restarts >= 5) throw err;
+        // The decoder sat idle (e.g. while other clips played) and the browser took it
+        // back. Nothing is lost: open a new one from the frame we still need.
+        this.restarts++;
+        void this.iter?.return(undefined).catch(() => undefined);
+        this.iter = null;
+      }
+    }
   }
   /** Frame for output frame `n` (call with increasing n). */
   async at(n: number): Promise<DecodedFrame | null> {
     let advanced = false;
     while (this.pos < this.frameIndices.length && this.frameIndices[this.pos] <= n) {
-      const r = await this.iter.next();
+      const r = await this.next();
       this.release();
       this.current = r.done ? null : r.value;
       this.pos++;
@@ -129,9 +179,11 @@ class ClipFrames {
     this.current = null;
     this.frame = null;
   }
+  /** Frees the decoder; the clip will not be asked for frames again. */
   close() {
     this.release();
-    void this.iter.return(undefined);
+    void this.iter?.return(undefined).catch(() => undefined);
+    this.iter = null;
   }
 }
 
@@ -203,7 +255,7 @@ export async function runExport(opts: {
       if (idx.length) {
         // Match the preview's colour conversion (calibrated once per source file).
         if (!colorFix.has(media.id)) colorFix.set(media.id, await matchPreviewColorSpace(media.url, new VideoSampleSink(track), media.duration ?? 1));
-        clipFrames.set(it.clip.id, new ClipFrames(new VideoSampleSink(track), idx, ts, colorFix.get(media.id) ?? null));
+        clipFrames.set(it.clip.id, new ClipFrames(() => new VideoSampleSink(track), idx, ts, colorFix.get(media.id) ?? null));
       }
       report('prepare', (i + 1) / Math.max(1, videoItems.length));
     }
@@ -258,10 +310,19 @@ export async function runExport(opts: {
       output.addAudioTrack(audioSource);
     }
     await output.start();
-    if (audioSource && mix) {
-      await audioSource.add(mix.buffer);
-      audioSource.close();
-    }
+    const audioBuf = audioSource && mix ? mix.buffer : null;
+    const audioSlice = audioBuf ? Math.max(1, Math.round(AUDIO_SLICE_SECONDS * audioBuf.sampleRate)) : 0;
+    let audioPos = 0;
+    /** Encodes the audio up to output time `until` (seconds). */
+    const feedAudio = async (until: number) => {
+      if (!audioSource || !audioBuf) return;
+      const end = Math.min(audioBuf.length, Math.ceil(until * audioBuf.sampleRate));
+      while (audioPos < end) {
+        const to = Math.min(end, audioPos + audioSlice);
+        await audioSource.add(sliceAudio(audioBuf, audioPos, to));
+        audioPos = to;
+      }
+    };
 
     // ---- 3. Video ---------------------------------------------------------------
     const provider = (n: number, samples: Map<string, DecodedFrame | null>): MediaContentProvider => (it: SequenceItem) => {
@@ -286,6 +347,8 @@ export async function runExport(opts: {
     for (let n = 0; n < frames; n++) {
       checkAbort(signal);
       const t = n / fps;
+      // Audio runs one slice ahead of the picture, so both encoders stay busy.
+      if (n % fps === 0) await feedAudio(t + 2 * AUDIO_SLICE_SECONDS);
       const samples = new Map<string, DecodedFrame | null>();
       for (const [id, cf] of clipFrames) {
         const it = seq.items.find((x) => x.clip.id === id)!;
@@ -297,9 +360,19 @@ export async function runExport(opts: {
       }
       await videoSource.add(t, 1 / fps);
       report('video', (n + 1) / frames, n + 1);
+      // A clip that is finished frees its decoder right away: dozens of idle decoders make
+      // the browser reclaim codecs, and they hold video memory.
+      for (const [id, cf] of clipFrames) {
+        if (cf.lastFrame <= n) {
+          cf.close();
+          clipFrames.delete(id);
+        }
+      }
       if (n % 2 === 0) await yieldToUi();
     }
     videoSource.close();
+    await feedAudio(Infinity);
+    audioSource?.close();
 
     // ---- 4. Finalize ---------------------------------------------------------------
     checkAbort(signal);
@@ -377,6 +450,9 @@ function friendlyError(err: unknown): Error {
   const msg = err instanceof Error ? err.message : String(err);
   if (err instanceof RangeError || /memory|allocation|quota/i.test(msg)) {
     return new ExportError(`The browser ran out of memory while exporting. Try a lower resolution or a shorter export. (${msg})`);
+  }
+  if (isCodecReclaimed(err)) {
+    return new ExportError('The browser stopped the video encoder because it was idle (this can happen when the tab is in the background for a long time). Keep this tab open in front while exporting and try again.');
   }
   if (/codec|encoder|decoder|configure/i.test(msg)) return new ExportError(`Encoding failed: ${msg}`);
   return new ExportError(`Export failed: ${msg}`);

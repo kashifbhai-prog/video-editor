@@ -1,4 +1,4 @@
-import { useMemo, useRef, useState, type FormEvent } from 'react';
+import { useMemo, useState, type FormEvent } from 'react';
 import { Bug, CheckCircle2, HelpCircle, Lightbulb, type LucideIcon } from 'lucide-react';
 import { useUiStore } from '../../store/uiStore';
 import { FEEDBACK_KIND_LABEL, sendFeedback, technicalInfo, type FeedbackKind } from '../../services/feedback';
@@ -23,6 +23,9 @@ const MIN_MESSAGE = 10;
 const MAX_MESSAGE = 5000;
 const EMAIL_RE = /^[^\s@]+@[^\s@]+\.[^\s@]{2,}$/;
 
+/** A small sum (1–9 + 1–9) people answer in a second; stops bots that fill in forms automatically. */
+const newSum = () => ({ a: 1 + Math.floor(Math.random() * 9), b: 1 + Math.floor(Math.random() * 9) });
+
 const inputCls =
   'w-full rounded-md border border-line-strong bg-panel-2 px-2.5 py-1.5 text-[12px] text-fg placeholder:text-fg-subtle focus:border-accent focus:outline-none';
 
@@ -37,22 +40,28 @@ export function FeedbackDialog() {
   const [state, setState] = useState<'idle' | 'sending' | 'sent' | 'mail'>('idle');
   const [error, setError] = useState<string | null>(null);
   const [touched, setTouched] = useState(false);
-  const honeypot = useRef<HTMLInputElement>(null);
+  const [sum, setSum] = useState(newSum);
+  const [answer, setAnswer] = useState('');
+  const [sumMissed, setSumMissed] = useState(false);
   const tech = useMemo(() => technicalInfo(), []);
 
   const msgShort = message.trim().length < MIN_MESSAGE;
   const emailBad = email.trim() !== '' && !EMAIL_RE.test(email.trim());
-  const invalid = msgShort || emailBad;
+  const sumWrong = answer.trim() === '' || Number(answer.trim()) !== sum.a + sum.b;
+  const invalid = msgShort || emailBad || sumWrong;
 
   const submit = async (e?: FormEvent) => {
     e?.preventDefault();
     setTouched(true);
-    if (invalid || state === 'sending') return;
-    // Bots fill every field; people never see this one.
-    if (honeypot.current?.value) {
-      setState('sent');
-      return;
+    // A wrong (not empty) answer gets a fresh sum, so it can't simply be guessed by trying 2…18.
+    if (sumWrong && answer.trim() !== '') {
+      setSum(newSum());
+      setAnswer('');
+      setSumMissed(true);
     }
+    if (invalid || state === 'sending') return;
+    // No hidden "honeypot" field: browser autofill filled it for real people and their messages were
+    // silently dropped. Floods are limited by the feedback service itself (rate limit).
     setState('sending');
     setError(null);
     const res = await sendFeedback({ kind, message: message.trim(), name: name.trim(), email: email.trim(), tech: includeTech ? tech : null });
@@ -169,8 +178,34 @@ export function FeedbackDialog() {
           </label>
         </div>
 
-        {/* Spam trap: hidden from people and screen readers. */}
-        <input ref={honeypot} type="text" name="website" tabIndex={-1} autoComplete="off" aria-hidden="true" className="absolute left-[-9999px] h-0 w-0 opacity-0" />
+        <label className="block" data-testid="feedback-sum">
+          <span className="mb-1.5 block text-[11px] font-semibold uppercase tracking-wider text-fg-muted">
+            Quick check <span className="font-normal normal-case tracking-normal text-fg-subtle">(stops spam robots)</span>
+          </span>
+          <span className="flex items-center gap-2.5">
+            <span className="whitespace-nowrap text-[13px] font-semibold text-fg" aria-hidden="true">
+              {sum.a} + {sum.b} =
+            </span>
+            <input
+              type="text"
+              inputMode="numeric"
+              autoComplete="off"
+              maxLength={3}
+              value={answer}
+              onChange={(e) => setAnswer(e.target.value.replace(/[^\d]/g, ''))}
+              placeholder="?"
+              aria-label={`What is ${sum.a} plus ${sum.b}?`}
+              aria-invalid={touched && sumWrong}
+              className={cn(inputCls.replace('w-full', 'w-16 flex-none'), 'text-center text-[13px]', touched && sumWrong && 'border-danger')}
+            />
+            {!sumWrong && <CheckCircle2 size={16} className="text-success" aria-label="Correct" />}
+          </span>
+          {touched && sumWrong && (
+            <span className="mt-1 block text-[11px] text-danger">
+              {answer.trim() !== '' ? 'That is not right yet.' : sumMissed ? 'Not quite – here is a new sum to answer.' : `Please answer ${sum.a} + ${sum.b}.`}
+            </span>
+          )}
+        </label>
 
         <div className="rounded-md border border-line bg-panel-2/60 p-2.5">
           <label className="flex cursor-pointer items-start gap-2 text-[12px]">
