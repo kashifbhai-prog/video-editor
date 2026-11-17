@@ -23,6 +23,11 @@ const CANDIDATES: (VideoColorSpaceInit | null)[] = [
 const W = 96;
 const H = 54;
 
+/** Longest wait for the reference <video> (load / seek) before calibration is skipped. */
+const VIDEO_WAIT_MS = 5000;
+const withTimeout = <T,>(p: Promise<T>) =>
+  Promise.race([p, new Promise<never>((_, rej) => setTimeout(() => rej(new Error('timeout')), VIDEO_WAIT_MS))]);
+
 /** Re-wraps a decoded frame with another colour-space tag (same planes). */
 export async function retagFrame(frame: VideoFrame, colorSpace: VideoColorSpaceInit): Promise<VideoFrame> {
   const buf = new Uint8Array(frame.allocationSize());
@@ -60,18 +65,24 @@ const diff = (a: Uint8ClampedArray, b: Uint8ClampedArray) => {
  */
 export async function matchPreviewColorSpace(url: string, sink: VideoSampleSink, duration: number): Promise<VideoColorSpaceInit | null> {
   if (typeof OffscreenCanvas === 'undefined') return null;
+  // A hidden tab doesn't load the reference <video> – skip rather than wait for each file.
+  if (typeof document !== 'undefined' && document.hidden) return null;
   const t = Math.min(1, Math.max(0, duration / 2));
   const video = document.createElement('video');
   video.muted = true;
   video.preload = 'auto';
   try {
     video.src = url;
-    await new Promise<void>((res, rej) => {
-      video.onloadeddata = () => res();
-      video.onerror = () => rej(new Error('load'));
-    });
+    // Bounded: Chrome defers loading media in background tabs, so in a hidden tab these
+    // events may never fire. Calibration is then skipped instead of stalling the export.
+    await withTimeout(
+      new Promise<void>((res, rej) => {
+        video.onloadeddata = () => res();
+        video.onerror = () => rej(new Error('load'));
+      }),
+    );
     video.currentTime = t;
-    await new Promise<void>((res) => (video.onseeked = () => res()));
+    await withTimeout(new Promise<void>((res) => (video.onseeked = () => res())));
     const ref = pixels(video);
     const sample = await sink.getSample(t);
     if (!sample) return null;

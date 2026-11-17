@@ -238,6 +238,65 @@ export function retimeKeyframesForTrim(clip: Clip, newStart: number): Clip['keyf
   return out;
 }
 
+// ---- Magnetic main track ------------------------------------------------------------
+// With the main-track magnet on, the main track behaves like CapCut's: trimming a
+// clip never leaves a gap – the clip stays where it is and every later clip on the
+// track moves by the change in length (left on a shorter clip, right on a longer
+// one). Deleting a clip closes its gap the same way.
+
+/**
+ * trimLeft without the timeline limits (time 0 and the previous clip): on a
+ * magnetic track the clip doesn't move, so only the source media and the
+ * minimum length limit how far its start can be trimmed or extended. Returns
+ * the "virtual" new left edge – where the start would be if the clip moved.
+ */
+export function trimLeftFree(clip: Clip, newStart: number, media: MediaItem | undefined): TrimResult {
+  const OFFSET = 1e5; // shift far right so time 0 never limits an extension
+  const r = trimLeft({ ...clip, start: clip.start + OFFSET }, newStart + OFFSET, media, []);
+  return { ...r, start: r.start - OFFSET };
+}
+
+/** trimRight without the next-clip limit (later clips move out of the way). */
+export const trimRightFree = (clip: Clip, newEnd: number, media: MediaItem | undefined): TrimResult => trimRight(clip, newEnd, media, []);
+
+/**
+ * Applies a trim on a magnetic track. `timing` is the free trim result
+ * (trimLeftFree / trimRightFree). The clip keeps its start; later clips on the
+ * same track move by the change in length. Returns every changed clip.
+ */
+export function rippleTrim(doc: Pick<ProjectDocument, 'clips'>, clip: Clip, timing: TrimResult): Record<string, Clip> {
+  const oldEnd = clipEnd(clip);
+  const trimmed: Clip = {
+    ...clip,
+    start: clip.start,
+    sourceIn: timing.sourceIn,
+    sourceOut: timing.sourceOut,
+  };
+  // Keyframes follow the content: a left trim removes (or adds) content before
+  // them, exactly as if the start had moved to timing.start.
+  if (clip.keyframes) trimmed.keyframes = retimeKeyframesForTrim(clip, timing.start);
+  const delta = clipDuration(trimmed) - clipDuration(clip);
+  const out: Record<string, Clip> = { [clip.id]: trimmed };
+  if (Math.abs(delta) < EPS) return out;
+  for (const c of clipsOnTrack(doc, clip.trackId)) {
+    if (c.id !== clip.id && c.start >= oldEnd - EPS) out[c.id] = { ...c, start: Math.max(0, c.start + delta) };
+  }
+  return out;
+}
+
+/**
+ * Closes the gaps left by deleted clips on a magnetic track: every remaining
+ * clip moves left by the total length of the deleted clips that were before it.
+ */
+export function closeGaps(remaining: Clip[], deleted: Clip[]): Record<string, Clip> {
+  const out: Record<string, Clip> = {};
+  for (const c of remaining) {
+    const shift = deleted.filter((d) => d.trackId === c.trackId && clipEnd(d) <= c.start + EPS).reduce((s, d) => s + clipDuration(d), 0);
+    if (shift > EPS) out[c.id] = { ...c, start: Math.max(0, c.start - shift) };
+  }
+  return out;
+}
+
 /** Source time shown at timeline time `t` for a clip (no bounds check). */
 export const sourceTimeAt = (clip: Clip, t: number) =>
   clip.reversed ? clip.sourceOut - (t - clip.start) * clip.speed : clip.sourceIn + (t - clip.start) * clip.speed;

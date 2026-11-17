@@ -3,7 +3,17 @@ import { useMediaStore } from '../store/mediaStore';
 import { useUiStore } from '../store/uiStore';
 import { usePlaybackStore } from '../store/playbackStore';
 import { previewEngine } from '../engine/previewEngine';
-import { clipEnd, clipsOnTrack, newTrackTypeFor, quantizeToFrame, trackAccepts, trimLeft, trimRight } from '../engine/timelineModel';
+import {
+  clipEnd,
+  clipsOnTrack,
+  newTrackTypeFor,
+  quantizeToFrame,
+  trackAccepts,
+  trimLeft,
+  trimLeftFree,
+  trimRight,
+  trimRightFree,
+} from '../engine/timelineModel';
 import type { Clip, MediaItem } from '../types';
 
 // ---------------------------------------------------------------------------
@@ -143,7 +153,7 @@ export function cutSelection() {
   const ids = getSelectedClipIds();
   if (!ids.length) return;
   copySelection();
-  const removed = project().deleteClips(ids);
+  const removed = project().deleteClips(ids, ui().mainMagnet);
   if (removed < ids.length) notify('Clips on locked tracks were copied but not removed.', 'warning');
   ui().setSelection({ kind: 'none' });
 }
@@ -170,10 +180,19 @@ export function trimSelectedToPlayhead(side: 'start' | 'end') {
   const doc = project().document;
   const t = quantizeToFrame(usePlaybackStore.getState().timelineTime, doc.canvas.frameRate);
   const media = useMediaStore.getState().items;
+  const magnet = ui().mainMagnet;
   project().transaction(() => {
-    for (const c of clips) {
-      if (doc.tracks.find((tr) => tr.id === c.trackId)?.locked) continue;
+    // Latest first: on the magnetic main track a trim moves the clips after it.
+    for (const sel of [...clips].sort((a, b) => b.start - a.start)) {
+      const track = doc.tracks.find((tr) => tr.id === sel.trackId);
+      if (!track || track.locked) continue;
+      const c = project().document.clips[sel.id];
+      if (!c) continue;
       const m = media.find((x) => x.id === c.mediaId);
+      if (magnet && track.isMain) {
+        project().rippleTrimClip(c.id, side === 'start' ? trimLeftFree(c, t, m) : trimRightFree(c, t, m));
+        continue;
+      }
       const neighbours = clipsOnTrack(project().document, c.trackId);
       project().setClipTiming(c.id, side === 'start' ? trimLeft(c, t, m, neighbours) : trimRight(c, t, m, neighbours));
     }
@@ -184,7 +203,7 @@ export function trimSelectedToPlayhead(side: 'start' | 'end') {
 export function deleteSelection() {
   const ids = getSelectedClipIds();
   if (ids.length) {
-    const removed = project().deleteClips(ids);
+    const removed = project().deleteClips(ids, ui().mainMagnet);
     if (removed < ids.length) notify('Clips on locked tracks were not deleted.', 'warning');
     ui().setSelection({ kind: 'none' });
     return;

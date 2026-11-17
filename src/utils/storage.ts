@@ -125,6 +125,8 @@ export interface Preferences {
   autosaveInterval: AutosaveInterval;
   timelineHeight: number;
   mediaViewMode: 'grid' | 'list';
+  /** Main-track magnet: trimming / deleting on the main track closes the gap. */
+  mainMagnet: boolean;
 }
 
 export const prefsStorage = {

@@ -8,6 +8,7 @@ import { useUiStore } from './uiStore';
 import { useProjectStore } from './projectStore';
 import { track } from '../services/analytics';
 import { releaseFilmstrip } from '../services/filmstrip';
+import { releaseClipWaveform } from '../services/clipWaveform';
 
 // ---------------------------------------------------------------------------
 // Media store: the project's media library. Owns object-URL lifetimes and
@@ -152,6 +153,7 @@ export const useMediaStore = create<MediaState>()((set, get) => {
       // Timeline clips that use this media go with it (one undoable step).
       useProjectStore.getState().removeClipsForMedia(id);
       releaseFilmstrip(id);
+      releaseClipWaveform(id);
       useProjectStore.getState().markDirty();
       // The blob is garbage-collected from IndexedDB on the next save.
     },
@@ -172,6 +174,7 @@ export const useMediaStore = create<MediaState>()((set, get) => {
       get().items.forEach((m) => {
         URL.revokeObjectURL(m.url);
         releaseFilmstrip(m.id);
+        releaseClipWaveform(m.id);
       });
       set({ items: [] });
     },
