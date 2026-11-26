@@ -1,6 +1,6 @@
 import { useEffect, useState } from 'react';
 import { useExportStore } from '../../services/exportService';
-import { CircleHelp, Download, MessageSquareText, PanelRight, Redo2, Save, Settings, Undo2 } from 'lucide-react';
+import { CircleHelp, Download, FilePlus2, MessageSquareText, PanelRight, Redo2, Save, Settings, Undo2 } from 'lucide-react';
 import { selectCanRedo, selectCanUndo, useProjectStore } from '../../store/projectStore';
 import { useUiStore } from '../../store/uiStore';
 import { useMediaStore } from '../../store/mediaStore';
@@ -70,6 +70,18 @@ export function TopBar() {
         <div className="mx-1 h-5 w-px bg-line" />
         <IconButton icon={Undo2} label="Undo" shortcut="Ctrl+Z" disabled={!canUndo} onClick={undo} />
         <IconButton icon={Redo2} label="Redo" shortcut="Ctrl+Shift+Z" disabled={!canRedo} onClick={redo} />
+        <div className="mx-1 h-5 w-px bg-line" />
+        <Tooltip label="Start a new project (the current one will be removed)">
+          <button
+            type="button"
+            onClick={() => openDialog('newProject')}
+            aria-label="New project"
+            className="inline-flex h-7 items-center gap-1.5 rounded-md border border-line-strong px-2.5 text-[12px] font-medium text-fg transition-colors hover:bg-hover"
+          >
+            <FilePlus2 size={14} strokeWidth={2} />
+            <span className="hidden lg:inline">New project</span>
+          </button>
+        </Tooltip>
       </div>
 
       <div className="absolute left-1/2 flex -translate-x-1/2 flex-col items-center">
