@@ -1,7 +1,7 @@
 import fs from 'node:fs';
 import path from 'node:path';
 import type { Plugin } from 'vite';
-import { HELP_ARTICLES, HELP_GROUPS, SITE_PAGES, TOOL_PAGES } from './content';
+import { BLOG_POSTS, HELP_ARTICLES, HELP_GROUPS, SITE_PAGES, TOOL_PAGES, type BlogPost } from './content';
 
 // ---------------------------------------------------------------------------
 // Website build plugin. Each page is a small HTML file holding only its own
@@ -64,6 +64,7 @@ function header(nav: string): string {
     <nav class="main-nav" aria-label="Main">
       ${link('/#features', 'Features', 'features')}
       ${link('/help/', 'Help Center', 'help')}
+      ${link('/blog/', 'Blog', 'blog')}
       ${link('/about/', 'About', 'about')}
       ${link('/contact/', 'Contact', 'contact')}
     </nav>
@@ -92,6 +93,7 @@ function footer(): string {
     </div>
     <div>
       <h3>Learn</h3>
+      <a href="/blog/">Blog</a>
       <a href="/help/getting-started/">Getting started</a>
       <a href="/help/ai-captions/">Auto captions</a>
       <a href="/help/export/">Exporting</a>
@@ -149,6 +151,29 @@ function moreTools(url: string): string {
   return `<div class="grid grid-3">${cards}</div>`;
 }
 
+const MONTHS = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December'];
+/** "2026-11-27" → "27 November 2026" (fixed format, independent of the build machine's locale). */
+const longDate = (iso: string) => {
+  const [y, m, d] = iso.split('-').map(Number);
+  return `${d} ${MONTHS[m - 1]} ${y}`;
+};
+
+function blogCard(p: BlogPost): string {
+  return `<a class="card card-link blog-card" href="/blog/${p.slug}/">
+    <img src="/img/${p.image}" width="2000" height="1125" alt="" loading="lazy" class="card-thumb" />
+    <span class="card-meta"><time datetime="${p.date}">${longDate(p.date)}</time> · ${p.minutes} min read</span>
+    <h3>${esc(p.title)}</h3><p>${esc(p.summary)}</p><span class="card-more">Read article ${ICON.arrow}</span></a>`;
+}
+
+/** Cards for the other blog posts (the current one is left out). */
+function relatedPosts(url: string): string {
+  const cards = BLOG_POSTS.filter((p) => `/blog/${p.slug}/` !== url)
+    .slice(0, 3)
+    .map(blogCard)
+    .join('');
+  return `<aside class="related" aria-label="More articles"><h2>Keep reading</h2><div class="grid grid-3">${cards}</div></aside>`;
+}
+
 const plain = (html: string) =>
   html
     .replace(/<[^>]+>/g, '')
@@ -167,7 +192,7 @@ const plain = (html: string) =>
  * breadcrumb; help articles an article plus a breadcrumb. Any FAQ (<details><summary>) on a
  * page becomes an FAQPage. Nothing invented – no ratings or reviews.
  */
-function structuredData(o: { url: string; pageUrl: string; title: string; description: string; nav: string; body: string; s: SiteSettings }): string {
+function structuredData(o: { url: string; pageUrl: string; title: string; description: string; nav: string; body: string; s: SiteSettings; post?: BlogPost }): string {
   const base = o.s.siteUrl.replace(/\/$/, '');
   const org = { '@type': 'Organization', '@id': `${base}/#org`, name: 'Cutistic', url: `${base}/`, logo: `${base}/apple-touch-icon.png` };
   const app = {
@@ -217,6 +242,26 @@ function structuredData(o: { url: string; pageUrl: string; title: string; descri
     );
   } else if (o.url === '/help/') {
     graph.push(crumbs([['Home', '/'], ['Help Center', '/help/']]));
+  } else if (o.post) {
+    const p = o.post;
+    graph.push(
+      {
+        '@type': 'BlogPosting',
+        headline: p.title,
+        description: o.description,
+        url: o.pageUrl,
+        mainEntityOfPage: o.pageUrl,
+        image: `${base}/img/${p.image}`,
+        datePublished: p.date,
+        dateModified: p.updated ?? p.date,
+        inLanguage: 'en',
+        author: { '@id': `${base}/#org` },
+        publisher: org,
+      },
+      crumbs([['Home', '/'], ['Blog', '/blog/'], [p.title, o.url]]),
+    );
+  } else if (o.url === '/blog/') {
+    graph.push({ '@type': 'Blog', name: 'Cutistic Blog', url: o.pageUrl, description: o.description, publisher: org }, crumbs([['Home', '/'], ['Blog', '/blog/']]));
   }
 
   const faqs = [...o.body.matchAll(/<details>\s*<summary>([\s\S]*?)<\/summary>([\s\S]*?)<\/details>/g)].map((m) => ({
@@ -236,6 +281,14 @@ function fill(html: string, s: SiteSettings, url: string): string {
   const email = esc(s.contactEmail);
   return html
     .replace(/\{\{moreTools\}\}/g, () => moreTools(url))
+    .replace(/\{\{blogIndex\}\}/g, () => `<div class="grid grid-3">${BLOG_POSTS.map(blogCard).join('')}</div>`)
+    .replace(/\{\{relatedPosts\}\}/g, () => relatedPosts(url))
+    .replace(/\{\{postMeta\}\}/g, () => {
+      const p = BLOG_POSTS.find((b) => `/blog/${b.slug}/` === url);
+      if (!p) return '';
+      const upd = p.updated && p.updated !== p.date ? ` · Updated <time datetime="${p.updated}">${longDate(p.updated)}</time>` : '';
+      return `<p class="post-meta">By the Cutistic team · <time datetime="${p.date}">${longDate(p.date)}</time>${upd} · ${p.minutes} min read</p>`;
+    })
     .replace(/\{\{email\}\}/g, email)
     .replace(/\{\{siteUrl\}\}/g, esc(s.siteUrl))
     .replace(/\{\{year\}\}/g, String(new Date().getFullYear()))
@@ -260,14 +313,18 @@ function renderPage(html: string, url: string, s: SiteSettings): string {
   const body = fill(/<body[^>]*>([\s\S]*)<\/body>/.exec(html)?.[1] ?? '', s, url);
   const pageUrl = s.siteUrl.replace(/\/$/, '') + url;
   const fullTitle = url === '/' ? `${title}` : `${title} · Cutistic`;
-  const ld = nav === '404' ? '' : structuredData({ url, pageUrl, title, description, nav, body, s });
+  const post = nav === 'blog' ? BLOG_POSTS.find((p) => p.slug === attr(html, 'data-post')) : undefined;
+  const ld = nav === '404' ? '' : structuredData({ url, pageUrl, title, description, nav, body, s, post });
   const article = HELP_ARTICLES.find((a) => a.slug === helpSlug);
   const crumbs = isHelp
     ? `<nav class="crumbs container" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/help/">Help Center</a>${article ? `<span>/</span><span aria-current="page">${esc(article.title)}</span>` : ''}</nav>`
-    : '';
+    : post
+      ? `<nav class="crumbs container" aria-label="Breadcrumb"><a href="/">Home</a><span>/</span><a href="/blog/">Blog</a><span>/</span><span aria-current="page">${esc(post.title)}</span></nav>`
+      : '';
   const main = isHelp
     ? `${crumbs}<div class="container help-layout">${helpSidebar(helpSlug)}<main id="main" class="help-main">${body}${article ? helpPager(helpSlug) : ''}</main></div>`
-    : `<main id="main">${body}</main>`;
+    : `${crumbs}<main id="main">${body}</main>`;
+  const ogImage = `${s.siteUrl.replace(/\/$/, '')}/img/${post ? post.image : 'og-image.png'}`;
   return `<!doctype html>
 <html lang="en">
   <head>
@@ -279,12 +336,12 @@ function renderPage(html: string, url: string, s: SiteSettings): string {
     <meta name="theme-color" content="#0e0f12" />${nav === '404' ? '<meta name="robots" content="noindex" />' : ''}
     <link rel="icon" type="image/png" href="/favicon.png" />
     <link rel="apple-touch-icon" href="/apple-touch-icon.png" />
-    <meta property="og:type" content="${article ? 'article' : 'website'}" />
+    <meta property="og:type" content="${article || post ? 'article' : 'website'}" />${post ? `\n    <meta property="article:published_time" content="${post.date}" />` : ''}
     <meta property="og:site_name" content="Cutistic" />
     <meta property="og:title" content="${esc(fullTitle)}" />
     <meta property="og:description" content="${esc(description)}" />
     <meta property="og:url" content="${esc(pageUrl)}" />
-    <meta property="og:image" content="${esc(s.siteUrl.replace(/\/$/, ''))}/img/og-image.png" />
+    <meta property="og:image" content="${esc(ogImage)}" />
     <meta name="twitter:card" content="summary_large_image" />${ld ? `\n    ${ld}` : ''}
     <link rel="preconnect" href="https://fonts.googleapis.com" />
     <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
@@ -304,7 +361,7 @@ function renderPage(html: string, url: string, s: SiteSettings): string {
 
 function sitemap(s: SiteSettings): string {
   const base = s.siteUrl.replace(/\/$/, '');
-  const urls = [...SITE_PAGES.map((p) => p.path), ...TOOL_PAGES.map((t) => `/${t.slug}/`), ...HELP_ARTICLES.map((a) => `/help/${a.slug}/`), '/editor/'];
+  const urls = [...SITE_PAGES.map((p) => p.path), ...TOOL_PAGES.map((t) => `/${t.slug}/`), ...HELP_ARTICLES.map((a) => `/help/${a.slug}/`), ...BLOG_POSTS.map((p) => `/blog/${p.slug}/`), '/editor/'];
   return `<?xml version="1.0" encoding="UTF-8"?>\n<urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">\n${urls.map((u) => `  <url><loc>${base}${u}</loc></url>`).join('\n')}\n</urlset>\n`;
 }
 
@@ -340,7 +397,8 @@ export function cutisticSite(s: SiteSettings): Plugin {
           const url = ctx.path.replace(/index\.html$/, '').replace(/\.html$/, '/') || '/';
           return renderPage(html, url === '/404/' ? '/404' : url, s);
         }
-        // The editor gets the consent bootstrap + Analytics, never ads.
+        // The editor gets the consent bootstrap + Analytics. No Auto ads: its only ad is the
+        // export-progress unit, loaded on demand by src/components/layout/ExportAd.tsx.
         const head = trackingHead(s, false);
         return head ? html.replace('</head>', `    ${head}\n  </head>`) : html;
       },

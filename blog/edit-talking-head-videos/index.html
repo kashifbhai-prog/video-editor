@@ -1,0 +1,93 @@
+<!doctype html>
+<html lang="en" data-layout="site" data-nav="blog" data-post="edit-talking-head-videos" data-title="How to edit talking-head videos people watch to the end" data-description="Editing techniques for tutorials, vlogs, lectures and interviews: jump cuts, removing pauses, punch-in zooms, B-roll, on-screen text, captions and structure – step by step, for free.">
+<body>
+<div class="container">
+<article class="prose prose-page">
+<span class="kicker">Editing technique</span>
+<h1>How to edit talking-head videos people actually watch to the end</h1>
+{{postMeta}}
+<p class="intro">A "talking head" is simply a person speaking to the camera: tutorials, lectures, vlogs, product explanations, interviews. It is the easiest kind of video to film and one of the hardest to keep interesting. The content may be excellent, but one face, one angle and one voice for ten minutes tests anyone's attention. Editing is what turns a recording into something people finish. Here are the techniques professional editors use, in the order you apply them.</p>
+<div class="toc" data-toc></div>
+
+<h2>1. Plan for the edit while you record</h2>
+<p>Good editing starts before you press record. A few habits make the edit faster and the result better:</p>
+<ul>
+  <li><strong>If you make a mistake, pause and repeat the whole sentence.</strong> Don't restart from the middle of a word. Clean pauses give you clean cut points.</li>
+  <li><strong>Film in the highest resolution your camera offers.</strong> Recording in 4K and exporting in 1080p lets you zoom in up to about 2× without losing sharpness – very useful later.</li>
+  <li><strong>Record some extra shots</strong> of what you talk about: your hands doing the task, the product, the screen, the location. These become your B-roll.</li>
+</ul>
+
+<h2>2. The rough cut: keep only the best take</h2>
+<p>Watch the whole recording once and remove everything that will definitely not be in the video: false starts, repeated sentences, interruptions, the part where you check the camera. The fastest way is to move the playhead to the start of a bad section, press <kbd>S</kbd> to split, move to its end, press <kbd>S</kbd> again, select the middle piece and press <kbd>Delete</kbd>.</p>
+<p>With the <strong>main track magnet</strong> switched on (the magnet icon in the timeline toolbar), the gap closes automatically, so the rest of the video slides up.</p>
+<p>For long recordings with many retakes, let the computer help: select the clip and click <strong>AI tools › Smart cuts › Analyse selected clip</strong>. It suggests cuts at scene changes, flags <strong>repeated takes</strong> – scenes that look like a later one – and marks dark or blurry stretches. You accept or reject each suggestion.</p>
+
+<h2>3. Remove the pauses</h2>
+<p>Natural speech is full of small pauses: thinking, breathing, "umm". In conversation they are fine; in a video they add up to a slow, sleepy pace. Cutting them is the single most effective thing you can do for a talking-head video – and it is tedious by hand.</p>
+<ol>
+  <li>Open <strong>AI tools › Silence removal</strong> and click <strong>Detect silence</strong>.</li>
+  <li>Every pause appears as a red band on the timeline and in a list.</li>
+  <li>Untick the pauses you want to keep – after a joke, before an important point, or where you show something without speaking.</li>
+  <li>Click <strong>Remove … pauses</strong>. All tracks are cut together, so music and captions stay in sync. It is one undo step.</li>
+</ol>
+<figure><img src="/img/ai-silence.webp" width="2000" height="1125" alt="Detected pauses shown as red bands across the timeline, next to the silence removal panel with the list of pauses" loading="lazy" /><figcaption>Detected pauses appear as red bands, so you can review them before anything is cut.</figcaption></figure>
+<p><strong>Don't cut too tight.</strong> If every breath is removed, speech sounds robotic and exhausting. Two settings control this: <strong>Shortest pause</strong> keeps short, natural breaks, and <strong>Keep around speech</strong> leaves a little silence before and after each word so it does not sound chopped. Changing them updates the result instantly.</p>
+
+<div class="ad-slot" data-ad="blog-article"></div>
+
+<h2>4. Hide jump cuts with punch-ins</h2>
+<p>Each cut you made creates a small "jump" – the head moves slightly between one frame and the next. Some creators embrace jump cuts as a style. If you want them smoother, the classic trick is the <strong>punch-in</strong>: alternate between a normal framing and a slightly closer one at each cut.</p>
+<ol>
+  <li>Select the clip after a cut.</li>
+  <li>In its properties, set <strong>Scale</strong> to around 110–120% and adjust <strong>Position</strong> so the face stays well framed.</li>
+  <li>Leave the next clip at 100%, zoom the one after that again, and so on.</li>
+</ol>
+<p>The change in framing makes the cut feel intentional. Use a stronger punch-in (130% or more) for emphasis – the punchline of a joke or the key sentence of your argument.</p>
+<p>For a gentle, continuous push-in that adds energy to a long sentence, use keyframes: add a <strong>Scale</strong> keyframe (◇) at 100% at the start of the clip, move the playhead to the end and set the scale to 108%. Cutistic animates the zoom smoothly between the two.</p>
+
+<h2>5. Cover cuts and add meaning with B-roll</h2>
+<p>B-roll is any footage that is not the speaker: close-ups, screenshots, photos, product shots, short clips of what you describe. It does two jobs at once. It hides cuts in the main recording, and it <em>shows</em> what you are saying instead of just telling.</p>
+<p>Place B-roll on an overlay track above your main video, so the voice continues underneath. A good rhythm is to cut to B-roll whenever you mention something visual, and to stay on your face when you express an opinion or tell a story – that is when viewers want to see you.</p>
+<p>If you only have a photo, a slow zoom with Scale keyframes keeps it from feeling static.</p>
+
+<h2>6. Put key points on screen</h2>
+<p>Short text on screen helps viewers who are skimming, reinforces the main points and gives the eye something new. Use it for:</p>
+<ul>
+  <li><strong>Section titles</strong> – "Step 2: Prepare the dough".</li>
+  <li><strong>Numbers and names</strong> – prices, measurements, people's names (as a lower third).</li>
+  <li><strong>One-line summaries</strong> of an important point.</li>
+</ul>
+<p>Open the <strong>Text</strong> panel and choose a style – <strong>Lower third</strong> works well for names. Add an entrance animation such as <strong>Pop up</strong> or <strong>Fade in</strong> in the clip's Animation settings. Keep a consistent style throughout the video: one font, two colours at most.</p>
+
+<h2>7. Add captions</h2>
+<p>Captions keep people watching who have the sound off, who are in a noisy place or who speak your language as a second language. Generate them with <strong>Captions › Generate captions</strong>, then read through them and correct any mistakes. Style them with a readable font and a background box. If your video is in Urdu, see <a href="/blog/how-to-add-urdu-subtitles-to-video/">our Urdu subtitles guide</a>.</p>
+<p>Captions are created from the edited timeline, so generate them <em>after</em> you have removed pauses and made your cuts.</p>
+
+<h2>8. Clean up the sound</h2>
+<p>In a talking-head video, the voice is the content. If it was recorded on a phone or laptop, select the clip and try <strong>AI tools › Audio enhancement</strong>: remove background noise, choose a Voice clarity preset and normalise the speech loudness. For interviews with several people, <strong>Balance all clip volumes</strong> makes everyone equally loud. Our article <a href="/blog/make-your-voice-sound-better-in-videos/">9 ways to make your voice sound better</a> goes into detail.</p>
+
+<h2>9. Shape the structure</h2>
+<p>Finally, watch the whole edit from start to finish and look at its structure rather than individual cuts:</p>
+<ul>
+  <li><strong>The opening:</strong> does the first ten seconds tell viewers what they will get? If your best moment is at minute four, consider showing a few seconds of it at the start.</li>
+  <li><strong>The middle:</strong> is there a section where your own attention drifts? Shorten it or cover it with B-roll.</li>
+  <li><strong>The ending:</strong> end soon after the last useful point. Long goodbyes are where most viewers leave.</li>
+</ul>
+
+<h2>Checklist</h2>
+<ol>
+  <li>Rough cut: only the best take of each sentence.</li>
+  <li>Pauses removed, with natural breathing room left.</li>
+  <li>Punch-ins at cuts; stronger zooms for emphasis.</li>
+  <li>B-roll whenever you mention something visual.</li>
+  <li>Section titles, names and key numbers on screen.</li>
+  <li>Captions generated and proofread.</li>
+  <li>Voice cleaned and at a consistent level.</li>
+  <li>A strong opening and a short ending.</li>
+</ol>
+<p>Every tool in this guide is free in <a href="/editor/">Cutistic</a>, runs in your browser and keeps your recordings on your own computer. You can also try silence removal directly on the <a href="/remove-silence-from-video/">remove silence from video</a> page.</p>
+</article>
+{{relatedPosts}}
+</div>
+</body>
+</html>

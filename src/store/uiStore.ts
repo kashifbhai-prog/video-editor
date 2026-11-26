@@ -27,7 +27,7 @@ export const BASE_PX_PER_SECOND = 40;
 
 const prefs = prefsStorage.load();
 
-export type DialogName = 'settings' | 'export' | 'feedback' | null;
+export type DialogName = 'settings' | 'export' | 'feedback' | 'newProject' | null;
 
 interface UiState {
   activeSection: SidebarSection;

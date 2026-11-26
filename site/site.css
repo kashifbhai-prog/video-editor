@@ -1002,6 +1002,52 @@ kbd {
   color: var(--fg);
 }
 
+/* Blog */
+.blog-card {
+  padding: 0 0 22px;
+  overflow: hidden;
+}
+.blog-card > :not(.card-thumb) {
+  margin-left: 22px;
+  margin-right: 22px;
+}
+.card-thumb {
+  display: block;
+  width: 100%;
+  height: auto;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+  object-position: top left;
+  border-bottom: 1px solid var(--line);
+  margin-bottom: 16px;
+}
+.card-meta {
+  display: block;
+  margin-bottom: 8px;
+  font-size: 13px;
+  color: var(--fg-subtle);
+}
+.blog-card h3 {
+  margin-top: 0;
+  line-height: 1.35;
+}
+.post-meta {
+  margin: -4px 0 28px;
+  font-size: 14px;
+  color: var(--fg-subtle);
+}
+.post-cover {
+  margin: 0 0 32px;
+}
+.related {
+  margin: 0 0 96px;
+  padding-top: 40px;
+  border-top: 1px solid var(--line);
+}
+.related h2 {
+  margin-top: 0;
+}
+
 /* Contact */
 .contact-card {
   display: grid;

@@ -1,0 +1,101 @@
+<!doctype html>
+<html lang="en" data-layout="site" data-nav="blog" data-post="best-video-export-settings" data-title="Best video export settings for YouTube, Instagram, TikTok and WhatsApp" data-description="Resolution, frame rate, bitrate, H.264 vs HEVC and audio settings explained in plain words, with simple recommended export settings for YouTube, Shorts, Instagram, TikTok, Facebook and WhatsApp.">
+<body>
+<div class="container">
+<article class="prose prose-page">
+<span class="kicker">Exporting</span>
+<h1>Best video export settings for YouTube, Instagram, TikTok and WhatsApp</h1>
+{{postMeta}}
+<p class="intro">You have finished your edit and the export window asks about resolution, frame rate, bitrate and codecs. Choose badly and the video looks blocky after upload, takes forever to export, or will not play on someone's phone. This guide explains each setting in plain words and ends with a simple table you can follow for every platform.</p>
+<div class="toc" data-toc></div>
+
+<h2>The short answer</h2>
+<p>If you only read one section, read this. For almost every situation, these settings are a safe choice:</p>
+<ul>
+  <li><strong>Resolution:</strong> 1080p.</li>
+  <li><strong>Frame rate:</strong> the same as your camera recorded (usually 30, sometimes 25, 24 or 60).</li>
+  <li><strong>Codec:</strong> H.264.</li>
+  <li><strong>Bitrate:</strong> about 8–12 Mbps for 1080p at 30 fps (the <strong>Standard</strong> or <strong>High quality</strong> preset in Cutistic).</li>
+  <li><strong>Audio:</strong> AAC, 160–256 kbps.</li>
+</ul>
+<p>Now let's look at why – and when to choose something different.</p>
+
+<figure><img src="/img/export.webp" width="2000" height="1125" alt="The export dialog with presets, file name, aspect ratio, resolution, frame rate, codec and bitrate settings and a summary with the estimated file size" loading="lazy" /><figcaption>Cutistic's export settings show the final size and an estimated file size before you start.</figcaption></figure>
+
+<h2>Resolution: how many pixels</h2>
+<p>Resolution is the size of the picture in pixels. The common names refer to the shorter side: 720p, 1080p, 1440p and 2160p (4K). For a horizontal 16:9 video, 1080p means 1920 × 1080; for a vertical 9:16 video it means 1080 × 1920.</p>
+<p><strong>Higher is not automatically better.</strong> Exporting at a higher resolution than your footage cannot add detail that was never recorded – it only makes the file bigger and the export slower. Use these rules:</p>
+<ul>
+  <li>Export at the resolution of your <em>best</em> footage, or lower.</li>
+  <li>For phones (Shorts, Reels, TikTok, WhatsApp), 1080p is plenty. The apps display at roughly that size anyway.</li>
+  <li>Choose 4K for YouTube only if your footage is 4K. A useful side effect: YouTube tends to give 4K uploads a higher-quality stream, so even viewers watching at 1080p may see a slightly cleaner picture.</li>
+  <li>720p is fine for quick drafts, slides and screen recordings with little movement.</li>
+</ul>
+
+<h2>Frame rate: how many pictures per second</h2>
+<p>Frame rate (fps) is how many still images make up each second of video. The rule is simple: <strong>export at the frame rate you filmed at.</strong></p>
+<table>
+  <tr><th>Frame rate</th><th>Typical use</th></tr>
+  <tr><td>24 fps</td><td>The "film look" – cinema, music videos.</td></tr>
+  <tr><td>25 fps</td><td>Standard in Pakistan, India, Europe and other PAL countries for broadcast.</td></tr>
+  <tr><td>30 fps</td><td>Default on most phones; the safest choice for social media.</td></tr>
+  <tr><td>50 / 60 fps</td><td>Sports, gaming, fast motion; smoother but larger files.</td></tr>
+</table>
+<p>Converting between rates – 30 to 24, for example – forces the computer to drop or repeat frames, which makes movement look slightly uneven. If you mix clips with different frame rates, choose the rate of the main footage. In Cutistic the frame-rate menu marks your project's rate with "(project)".</p>
+
+<div class="ad-slot" data-ad="blog-article"></div>
+
+<h2>Bitrate: how much data per second</h2>
+<p>Bitrate is the single setting that affects quality the most, and the least understood. It is the amount of data used to describe each second of video, measured in megabits per second (Mbps). More data means more detail – and a bigger file.</p>
+<p>Too low, and you get blocky squares in dark areas, smeared faces and "mosquito" noise around text, especially in scenes with a lot of movement. Too high, and the file is huge without looking any better.</p>
+<p>Because every platform <strong>re-compresses your video</strong> after upload, give it a clean starting point: a bit more bitrate than the platform itself uses. YouTube publishes recommended upload bitrates; the numbers below are in the same range and work well for other platforms too.</p>
+<table>
+  <tr><th>Resolution</th><th>24–30 fps</th><th>50–60 fps</th></tr>
+  <tr><td>720p</td><td>5 Mbps</td><td>7–8 Mbps</td></tr>
+  <tr><td>1080p</td><td>8–12 Mbps</td><td>12–15 Mbps</td></tr>
+  <tr><td>1440p</td><td>16 Mbps</td><td>24 Mbps</td></tr>
+  <tr><td>2160p (4K)</td><td>35–45 Mbps</td><td>53–68 Mbps</td></tr>
+</table>
+<p>Fast movement, confetti, water, leaves and grainy low-light footage need more bitrate; a talking head against a plain wall or a slide presentation needs less. Cutistic's presets set the bitrate for you from the resolution and frame rate; switch to <strong>Custom</strong> and use the bitrate slider if you want to go higher or lower. The <strong>Estimated size</strong> line updates as you change it, which is handy when a file must stay under a size limit.</p>
+
+<h2>Codec: H.264 or HEVC (H.265)?</h2>
+<p>The codec is the method used to compress the video. You will see two choices:</p>
+<ul>
+  <li><strong>H.264 (AVC)</strong> plays on practically every phone, computer, TV and website made in the last fifteen years. It is the safe default.</li>
+  <li><strong>HEVC / H.265</strong> produces files roughly 30–50% smaller at the same quality. Modern phones and platforms handle it, but some older devices, older Windows PCs and some web players cannot play it.</li>
+</ul>
+<p>Use H.264 unless file size really matters and you know where the video will be played. HEVC is a good choice for archiving your own videos or sending a large file to someone with a recent phone. In Cutistic, HEVC appears only when your browser and graphics hardware can encode it.</p>
+<div class="callout note"><strong>What about MP4?</strong><p>MP4 is the <em>container</em> – the file that holds the compressed video and audio together. H.264 or HEVC video and AAC audio inside an MP4 file is the most widely compatible combination there is.</p></div>
+
+<h2>Audio settings</h2>
+<p>Audio needs very little data compared with video. AAC at <strong>160 kbps</strong> is clear for speech; <strong>256 kbps</strong> or more is worth it when music is the point of the video. Stereo at 48 kHz is the video standard. Going above 256 kbps rarely makes an audible difference after a platform re-compresses it.</p>
+
+<h2>Recommended settings by platform</h2>
+<p>Platform limits and recommendations change from time to time, so check the platform's help pages for maximum length and file size. These settings give good results today:</p>
+<table>
+  <tr><th>Where</th><th>Aspect ratio</th><th>Resolution</th><th>Codec &amp; bitrate</th></tr>
+  <tr><td>YouTube (normal video)</td><td>16:9</td><td>1080p, or 4K if filmed in 4K</td><td>H.264, 8–12 Mbps (1080p30)</td></tr>
+  <tr><td>YouTube Shorts</td><td>9:16</td><td>1080 × 1920</td><td>H.264, 8–12 Mbps</td></tr>
+  <tr><td>Instagram Reels</td><td>9:16</td><td>1080 × 1920</td><td>H.264, 8–10 Mbps</td></tr>
+  <tr><td>Instagram / Facebook feed</td><td>4:5 or 1:1</td><td>1080 × 1350 or 1080 × 1080</td><td>H.264, 8 Mbps</td></tr>
+  <tr><td>TikTok</td><td>9:16</td><td>1080 × 1920</td><td>H.264, 8–10 Mbps</td></tr>
+  <tr><td>Facebook (landscape)</td><td>16:9</td><td>1080p</td><td>H.264, 8 Mbps</td></tr>
+  <tr><td>WhatsApp</td><td>Any</td><td>720p or 1080p</td><td>H.264, 4–6 Mbps</td></tr>
+</table>
+
+<h2>A note about WhatsApp</h2>
+<p>WhatsApp compresses videos strongly to save data, so even a perfect export can look soft after sending. Two things help: when sending, choose the <strong>HD</strong> option if your app shows it, or send the MP4 <strong>as a document</strong> – documents are delivered without re-compression. For long videos, a 720p export with a moderate bitrate keeps the file small enough to send quickly.</p>
+
+<h2>Common export problems</h2>
+<ul>
+  <li><strong>Blocky in dark scenes:</strong> raise the bitrate, or brighten the footage slightly – dark areas are where compression shows first.</li>
+  <li><strong>Movement stutters:</strong> the export frame rate does not match the footage. Set it back to the original rate.</li>
+  <li><strong>The file will not play on someone's computer:</strong> you probably used HEVC. Export again with H.264.</li>
+  <li><strong>Export is very slow:</strong> lower the resolution or check that the summary says a hardware encoder is available. Closing other heavy tabs and apps also helps.</li>
+</ul>
+<p>Cutistic exports MP4 files up to 4K, with no watermark, directly on your computer. Try these settings in <a href="/editor/">the editor</a>, or read the full list of options in <a href="/help/export/">Exporting your video</a>.</p>
+</article>
+{{relatedPosts}}
+</div>
+</body>
+</html>

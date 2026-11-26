@@ -34,6 +34,7 @@ import { Button } from '../controls/Button';
 import { Select } from '../controls/Select';
 import { InfoRow, PropertyRow } from '../properties/PropertySection';
 import { cn } from '../../utils/cn';
+import { ExportAd, exportAdsEnabled } from './ExportAd';
 
 const STAGE_LABEL: Record<ExportStage, string> = {
   prepare: 'Preparing media (demuxing & decoders)',
@@ -275,6 +276,7 @@ function ProgressView() {
           )}
         </div>
       </div>
+      {exportAdsEnabled() && <ExportAd />}
       <div className="space-y-1.5 rounded-md border border-line bg-panel-2 p-3">
         <InfoRow label="Elapsed" value={<span className="font-mono">{fmtClock(elapsed)}</span>} />
         <InfoRow label="Remaining" value={<span className="font-mono">{eta !== null ? `≈ ${fmtClock(eta)}` : '—'}</span>} />
@@ -382,7 +384,7 @@ export function ExportDialog() {
     );
   }
   return (
-    <Dialog title="Export" onClose={close} footer={footer} width={520}>
+    <Dialog title="Export" onClose={close} footer={footer} width={status === 'running' && exportAdsEnabled() ? 600 : 520}>
       {!hasClips && status !== 'running' && !result ? <p className="mb-3 text-[11px] text-fg-muted">The timeline is empty – add clips to export a video.</p> : null}
       {body}
     </Dialog>

@@ -59,9 +59,38 @@ export const TOOL_PAGES: ToolPage[] = [
   { slug: 'remove-video-background', title: 'Remove video background', summary: 'Remove the background behind a person – no green screen – and replace it with anything.' },
 ];
 
-/** Pages listed in the sitemap (help articles and tool pages are added separately). */
+/**
+ * Blog articles: longer, original guides about making videos (not just how a button works).
+ * Each lives at /blog/<slug>/index.html (data-nav="blog" data-post="<slug>"). Newest first.
+ */
+export interface BlogPost {
+  slug: string;
+  title: string;
+  /** One or two sentences for the cards and the meta description. */
+  summary: string;
+  /** Publication date, YYYY-MM-DD. */
+  date: string;
+  /** Updated date, YYYY-MM-DD (defaults to date). */
+  updated?: string;
+  minutes: number;
+  /** Card / social image under /img/. */
+  image: string;
+  imageAlt: string;
+}
+
+export const BLOG_POSTS: BlogPost[] = [
+  { slug: 'edit-youtube-shorts-reels-tiktok', title: 'How to edit vertical videos for YouTube Shorts, Reels and TikTok', summary: 'A practical workflow for 9:16 videos: framing, the first three seconds, captions, pacing, music and the right export settings – all in your browser.', date: '2026-11-27', minutes: 8, image: 'editor-hero.webp', imageAlt: 'The Cutistic editor with a video on the timeline' },
+  { slug: 'make-your-voice-sound-better-in-videos', title: '9 ways to make your voice sound better in videos (without buying a new mic)', summary: 'Most bad audio is fixed before you press record. Room, distance, levels – and then noise removal, EQ and loudness in the edit.', date: '2026-11-27', minutes: 7, image: 'audio.webp', imageAlt: 'Audio settings of a clip with volume, fades and equalizer' },
+  { slug: 'best-video-export-settings', title: 'Best video export settings for YouTube, Instagram, TikTok and WhatsApp', summary: 'Resolution, frame rate, bitrate and codec explained in plain words – with simple settings that look good on every platform.', date: '2026-11-27', minutes: 6, image: 'export.webp', imageAlt: 'Export dialog with resolution, frame rate, codec and bitrate settings' },
+  { slug: 'how-to-add-urdu-subtitles-to-video', title: 'How to add Urdu subtitles to a video (and get them right)', summary: 'Generate Urdu captions from speech, fix the common mistakes, style them in Nastaliq and decide between burned-in captions and SRT files.', date: '2026-11-27', minutes: 7, image: 'captions.webp', imageAlt: 'Generated captions in the caption editor' },
+  { slug: 'edit-talking-head-videos', title: 'How to edit talking-head videos people actually watch to the end', summary: 'Jump cuts, removing pauses, punch-in zooms, B-roll and on-screen text: the editing habits that keep viewers watching.', date: '2026-11-27', minutes: 7, image: 'ai-silence.webp', imageAlt: 'Detected pauses shown as red bands on the timeline' },
+  { slug: 'video-editing-terms-for-beginners', title: 'Video editing for beginners: 15 terms you need to know', summary: 'Timeline, track, trim, split, keyframe, aspect ratio, frame rate, bitrate, codec and more – explained simply, with an example for each.', date: '2026-11-27', minutes: 7, image: 'context-menu.webp', imageAlt: 'Right-click menu of a clip on the timeline' },
+];
+
+/** Pages listed in the sitemap (help articles, tool pages and blog posts are added separately). */
 export const SITE_PAGES: SitePage[] = [
   { path: '/', title: 'Home' },
+  { path: '/blog/', title: 'Blog' },
   { path: '/help/', title: 'Help Center' },
   { path: '/about/', title: 'About' },
   { path: '/contact/', title: 'Contact' },

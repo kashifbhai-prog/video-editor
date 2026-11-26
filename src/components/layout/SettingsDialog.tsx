@@ -1,6 +1,4 @@
-import { useState } from 'react';
 import { useUiStore } from '../../store/uiStore';
-import { resetProject } from '../../services/projectService';
 import { SHORTCUTS } from '../../hooks/useKeyboardShortcuts';
 import type { AutosaveInterval } from '../../types';
 import { Dialog } from '../controls/Dialog';
@@ -17,7 +15,6 @@ export function SettingsDialog() {
   const close = () => useUiStore.getState().openDialog(null);
   const autosave = useUiStore((s) => s.autosaveInterval);
   const setAutosave = useUiStore((s) => s.setAutosaveInterval);
-  const [confirmReset, setConfirmReset] = useState(false);
 
   return (
     <Dialog title="Settings" onClose={close} width={520} footer={<Button onClick={close}>Close</Button>}>
@@ -53,22 +50,7 @@ export function SettingsDialog() {
               <div className="text-[12px]">New project</div>
               <div className="text-[11px] text-fg-subtle">Clears the current project, its saved copy and stored media.</div>
             </div>
-            {confirmReset ? (
-              <div className="flex gap-1.5">
-                <Button variant="ghost" onClick={() => setConfirmReset(false)}>Cancel</Button>
-                <Button
-                  variant="danger"
-                  onClick={async () => {
-                    await resetProject();
-                    close();
-                  }}
-                >
-                  Confirm
-                </Button>
-              </div>
-            ) : (
-              <Button variant="danger" onClick={() => setConfirmReset(true)}>New project</Button>
-            )}
+            <Button variant="danger" onClick={() => useUiStore.getState().openDialog('newProject')}>New project</Button>
           </div>
         </section>
       </div>

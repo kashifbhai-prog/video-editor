@@ -1,0 +1,87 @@
+<!doctype html>
+<html lang="en" data-layout="site" data-nav="blog" data-post="how-to-add-urdu-subtitles-to-video" data-title="How to add Urdu subtitles to a video (and get them right)" data-description="Step-by-step: generate Urdu captions from speech for free, fix common speech-recognition mistakes, style them in Nastaliq, keep them readable, and choose between burned-in captions and SRT files.">
+<body>
+<div class="container">
+<article class="prose prose-page">
+<span class="kicker">Captions</span>
+<h1>How to add Urdu subtitles to a video (and get them right)</h1>
+{{postMeta}}
+<p class="intro">Urdu captions make your videos easier to follow in noisy places, accessible to people who are hard of hearing, and watchable by the many viewers who scroll with the sound off. Until recently, adding them meant typing every line by hand. Today, speech recognition can write a first draft in minutes – but Urdu has its own challenges. This guide shows the complete process, including how to fix the mistakes that machines typically make.</p>
+<div class="toc" data-toc></div>
+
+<h2>Before you start: what you need</h2>
+<ul>
+  <li><strong>A video with clear Urdu speech.</strong> The clearer the voice, the better the result. If there is loud music or background noise, clean the audio first (see step 2).</li>
+  <li><strong>A computer with a recent Chrome or Edge browser.</strong> The speech model runs on your own computer, so your video is never uploaded.</li>
+  <li><strong>Some patience the first time.</strong> The most accurate model is around 250 MB. It downloads once and is then stored by your browser.</li>
+</ul>
+
+<h2>Step 1: Put your video on the timeline</h2>
+<p>Open <a href="/editor/">the editor</a>, click <strong>Import</strong> and choose your video. Add it to the timeline by dragging it there or by clicking the <strong>+</strong> on its thumbnail. If your video is made of several clips, finish cutting it first – captions are created for the speech that is on the timeline, and cutting afterwards is possible but more work.</p>
+
+<h2>Step 2: Clean the audio (if needed)</h2>
+<p>Speech recognition is much more accurate on a clean voice. If the recording has fan noise, traffic or echo, select the clip and use <strong>AI tools › Audio enhancement › AI noise removal</strong> before generating captions. If music plays on a separate track, you can tell the caption tool to listen only to the selected clip (next step), so the music is ignored.</p>
+
+<h2>Step 3: Generate the captions</h2>
+<ol>
+  <li>Open the <strong>Captions</strong> panel from the left side.</li>
+  <li>Under <strong>Audio</strong>, choose the whole timeline, or only the selected clip if music is playing on another track.</li>
+  <li>Under <strong>Language</strong>, choose <strong>Urdu</strong>. Do not use "Detect automatically" for Urdu: spoken Urdu and Hindi sound very similar, and automatic detection sometimes picks Hindi and writes in Devanagari script.</li>
+  <li>Under <strong>Model</strong>, choose <strong>Small – most accurate</strong>. The smaller models are faster but make many more mistakes in Urdu.</li>
+  <li>If your computer has a reasonable graphics card, tick <strong>Use the graphics card when available</strong> – long videos are transcribed much faster.</li>
+  <li>Click <strong>Generate captions</strong>.</li>
+</ol>
+<p>A progress bar shows the download (first time only) and then the transcription, with the time remaining. You can keep editing while it runs. When it finishes, the captions appear on their own caption track, timed to the voice, in the <strong>Noto Nastaliq Urdu</strong> font.</p>
+<figure><img src="/img/captions.webp" width="2000" height="1125" alt="The captions panel listing each caption with its start and end time, and a styled caption on the video" loading="lazy" /><figcaption>Each generated caption has its own start and end time and can be edited.</figcaption></figure>
+
+<div class="ad-slot" data-ad="blog-article"></div>
+
+<h2>Step 4: Proofread – the step you must not skip</h2>
+<p>Speech recognition for Urdu is good, but not as reliable as for English. Plan to read every caption once while the video plays. Click a caption's time in the <strong>Edit captions</strong> list to jump there, and correct the text directly in the list. These are the mistakes to look out for:</p>
+<table>
+  <tr><th>Mistake</th><th>What to do</th></tr>
+  <tr><td>Names of people, places and brands spelled wrongly</td><td>Correct them by hand. The model has never heard most names.</td></tr>
+  <tr><td>English words – especially technical terms – written in unusual Urdu spellings</td><td>Decide on one spelling and use it everywhere – or write the English word in English.</td></tr>
+  <tr><td>Words that sound alike (e.g. similar endings) confused</td><td>Read the sentence for meaning, not only for sound.</td></tr>
+  <tr><td>Missing punctuation or one very long caption</td><td>Split long lines with <kbd>Enter</kbd> and add ۔ or ، where they help reading.</td></tr>
+  <tr><td>A caption appears slightly early or late everywhere</td><td>Use <strong>Sync −0.1 s / +0.1 s</strong> to shift all captions together.</td></tr>
+</table>
+<p>You can also change any caption's start and end times, delete captions (for example on a cough or music), and add new ones at the playhead with <strong>Add</strong>.</p>
+<div class="callout tip"><strong>Roman Urdu?</strong><p>The speech model writes Urdu in Urdu script. If your audience prefers Roman Urdu, generate the captions anyway – the timing is the hard part – then retype the text of each caption in Roman Urdu. Change the font to an English one such as Inter for those captions.</p></div>
+
+<h2>Step 5: Make them readable</h2>
+<p>Nastaliq is beautiful, but it is taller and more detailed than Latin script, so it needs a little more care on small screens. Open <strong>Style</strong> in the Captions panel – changes apply to every caption at once:</p>
+<ul>
+  <li><strong>Size:</strong> go larger than you would for English. Nastaliq at small sizes becomes hard to read on a phone.</li>
+  <li><strong>Background box or outline:</strong> a semi-transparent dark box behind white text is the most readable option over busy footage.</li>
+  <li><strong>Length:</strong> keep each caption to one or two short lines. Long lines force viewers to read instead of watch.</li>
+  <li><strong>Position:</strong> for vertical videos, put captions a little below the centre, because the bottom of the screen is covered by the app's buttons and description.</li>
+</ul>
+<p>Mixed text such as "یہ میرا YouTube چینل ہے" is laid out right-to-left correctly, with the English word in the right place.</p>
+
+<h2>Step 6: Burned-in captions or an SRT file?</h2>
+<p>There are two ways to deliver subtitles, and you can do both:</p>
+<table>
+  <tr><th></th><th>Burned-in (in the picture)</th><th>SRT file (separate)</th></tr>
+  <tr><td>How</td><td>Captions are part of the exported video.</td><td><strong>SRT (download)</strong> saves a subtitle file you upload alongside the video.</td></tr>
+  <tr><td>Viewer can turn them off</td><td>No</td><td>Yes</td></tr>
+  <tr><td>Your font and style</td><td>Yes – Nastaliq, colours, box</td><td>No – the player decides how they look</td></tr>
+  <tr><td>Best for</td><td>Shorts, Reels, TikTok, WhatsApp, Facebook feed</td><td>YouTube videos, websites, courses</td></tr>
+</table>
+<p>For social media, burned-in captions are usually best: they always show, they look the way you designed them, and they work in every app. For YouTube, uploading an SRT file as well lets viewers switch the captions off and gives YouTube the text of your video. Note that many video players show Urdu SRT subtitles in a plain Naskh-style font rather than Nastaliq.</p>
+<p>If you already have an SRT file – from a translator, for example – use <strong>Import</strong> in the Captions panel to load it onto the timeline and style it.</p>
+
+<h2>Step 7: Export</h2>
+<p>Make sure <strong>Show captions</strong> is on, play the video once more from the start, then click <strong>Export</strong>. The captions are rendered into the MP4 exactly as you see them in the player.</p>
+
+<h2>Frequently asked questions</h2>
+<details><summary>Is it really free?</summary><p>Yes. The speech model runs on your own computer in the browser, so there is no per-minute cost and no limit on how many videos you caption.</p></details>
+<details><summary>Is my video uploaded anywhere?</summary><p>No. Only the speech model itself is downloaded once. Your video and audio are processed on your computer.</p></details>
+<details><summary>Does it work for Punjabi, Hindi or Arabic too?</summary><p>Yes – choose the language in the Language menu. As with Urdu, select the language explicitly and use the Small model for the best accuracy.</p></details>
+<details><summary>Why did my captions come out in Hindi script?</summary><p>The language was probably set to "Detect automatically". Set it to Urdu and generate the captions again.</p></details>
+<p>For every caption option, see the help article on <a href="/help/ai-captions/">auto captions and subtitles</a>, or try it on the <a href="/urdu-subtitles/">Urdu subtitles</a> page.</p>
+</article>
+{{relatedPosts}}
+</div>
+</body>
+</html>
